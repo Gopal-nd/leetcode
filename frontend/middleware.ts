@@ -2,7 +2,6 @@ import { Session } from 'better-auth';
 import { betterFetch } from '@better-fetch/fetch';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-// import  from 'better-auth/react'
 
 export default async function middleware(request: NextRequest){
     const token = request.cookies.get("better-auth.session_token")?.value
@@ -19,7 +18,6 @@ export default async function middleware(request: NextRequest){
     const res = await betterFetch<Session>(sessionUrl, {
       headers: { cookie: request.headers.get("cookie") || "" },
     });
-
     session = res.data;
 
     } catch (err) {
@@ -28,9 +26,12 @@ export default async function middleware(request: NextRequest){
     
     }
 
+    if (request.nextUrl.pathname.startsWith('/sign-in') && session) {
+        return NextResponse.rewrite(new URL('/admin', request.url))
+    }
 
     if (request.nextUrl.pathname.startsWith('/admin') && session?.user?.role !== "ADMIN") {
-        return NextResponse.rewrite(new URL('/', request.url))
+        return NextResponse.rewrite(new URL('/dashboard', request.url))
     }
  
     if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
@@ -42,5 +43,5 @@ export default async function middleware(request: NextRequest){
  
 
 export const config = {
-  matcher: ['/dashboard', '/dashboard/:path*', '/admin', '/admin/:path*'],
+  matcher: [ '/dashboard/:path*', '/admin/:path*', '/sign-in'],
 }
