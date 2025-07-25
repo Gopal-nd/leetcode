@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5435:5432
+    volumes:
+      - leetcode-db:/var/lib/postgresql/data
+
+volumes:
+  leetcode-db:
