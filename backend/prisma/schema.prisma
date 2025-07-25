@@ -24,7 +24,7 @@ model User {
   emailVerified Boolean
   sessions      Session[]
   accounts      Account[]
-
+  problems      Problems[]
   @@map("user")
 }
 
@@ -33,6 +33,11 @@ enum Role {
   USER
 }
 
+enum Defficulty {
+  EASY
+  MEDIUM
+  HARD
+}
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -76,4 +81,23 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Problems {
+  id            String    @id @default(cuid())
+  title       String
+  description String
+  difficulty  Defficulty
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags        String[]
+  examples    Json
+  editorial   String?
+  hints       String?
+  constraints  String
+  testCases   Json
+  codeSnippets Json
+  referenceSolutions   Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
