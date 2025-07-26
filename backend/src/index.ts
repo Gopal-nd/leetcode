@@ -35,6 +35,8 @@ app.get("/api/me", async (req, res) => {
 
 app.use("/api/v1/problems", problemsRoute)
 app.use("/api/v1/execute-code", executeCodeRoute)
+app.use("/api/v1/submissions", executeCodeRoute)
+
 
 
 
