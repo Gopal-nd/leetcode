@@ -6,7 +6,7 @@ import type { Request, Response, NextFunction } from "express";
 import problemsRoute from './routes/problems.router'
 import { auth } from "../auth";
 import errorHandler from './middleware/error.middleware';
-import { authUser } from './middleware/auth.middleware';
+import {  userAuth } from './middleware/auth.middleware';
 
 const app = express()
 const port = process.env.PORT!
@@ -31,7 +31,7 @@ app.get("/api/me", async (req, res) => {
 	return res.json(session);
 });
 
-app.use("/api/problems",authUser, problemsRoute)
+app.use("/api/v1/problems", problemsRoute)
 
 app.get("/", async (req, res) => {
   res.send(`${process.env.FRONTEND_URL}`)

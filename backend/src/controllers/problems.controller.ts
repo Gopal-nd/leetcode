@@ -1,0 +1,110 @@
+import { APIError } from "../utils/api-error";
+import {
+  getJudge0LanguageId,
+  pollBatchResults,
+  submitBatch,
+} from "../lib/judge0";
+import prisma from "../lib/db";
+import asyncHandler from "../utils/async-handler";
+import { ApiResponse } from "../utils/api-response";
+
+export const createProblem = asyncHandler(async (req, res) => {
+  const {
+    title,
+    description,
+    difficulty,
+    tags,
+    examples,
+    constraints,
+    testCases,
+    codeSnippets,
+    referenceSolutions,
+  } = req.body;
+
+  console.log("body", req.body);
+  try {
+    for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
+      const languageId = getJudge0LanguageId(language);
+
+      if (!languageId) {
+        throw new APIError({
+          status: 400,
+          message: "Invalid languageId " + languageId,
+        });
+      }
+
+      const submissions = testCases.map(
+        ({ input, output }: { input: string; output: string }) => ({
+          source_code: solutionCode,
+          language_id: languageId,
+          stdin: input,
+          expected_output: output,
+        })
+      );
+
+      console.log( "submitions",submissions)
+
+      const submissionResults = await submitBatch(submissions);
+
+      const tokens = submissionResults.map((res: any) => res.token);
+    //   console.log("tokens are :-", tokens)
+      const results = await pollBatchResults(tokens);
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        console.log( "result of each test case",i,result)
+        console.log("Result-----", result);
+        console.log(
+          `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
+        );
+        if (result.status.id !== 3) {
+          return new ApiResponse({
+            statusCode: 400,
+            data: null,
+            message: `Testcase ${
+              i + 1
+            } and Language ${language} ----- result ${JSON.stringify(
+              result.status.description
+            )}`,
+          });
+        }
+      }
+    }
+    //   const newProblem = await prisma.problems.create({
+    //   data: {
+    //     title,
+    //     description,
+    //     difficulty,
+    //     tags,
+    //     examples,
+    //     constraints,
+    //     testCases,
+    //     codeSnippets,
+    //     referenceSolutions,
+    //     userId: req.user?.id,
+    //   },
+    // });
+
+    return res.status(201).json({
+      sucess: true,
+      message: "Message Created Successfully",
+      problem: "newProblem",
+    });
+  } catch (error) {
+    console.log(error);
+    return new ApiResponse({
+      statusCode: 400,
+      data: null,
+      message: `something went wrong ${error}`,
+    });
+  }
+});
+
+export const getAllProblems = asyncHandler(async (req, res) => {});
+
+export const getProblemById = asyncHandler(async (req, res) => {});
+
+export const updateProblemById = asyncHandler(async (req, res) => {});
+export const deleteProblemById = asyncHandler(async (req, res) => {});
+
+export const getUserSolvedProblems = asyncHandler(async (req, res) => {});
