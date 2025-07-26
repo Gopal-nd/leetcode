@@ -5,6 +5,11 @@ import type { Request, Response, NextFunction } from "express";
 
 import problemsRoute from './routes/problems.router'
 import executeCodeRoute from './routes/execute-code.router'
+import submissionsRoute from './routes/execute-code.router'
+import playlistsRoute from './routes/playlist.router'
+
+
+
 
 import { auth } from "../auth";
 import errorHandler from './middleware/error.middleware';
@@ -35,9 +40,8 @@ app.get("/api/me", async (req, res) => {
 
 app.use("/api/v1/problems", problemsRoute)
 app.use("/api/v1/execute-code", executeCodeRoute)
-app.use("/api/v1/submissions", executeCodeRoute)
-
-
+app.use("/api/v1/submissions", submissionsRoute)
+app.use("/api/v1/playlists", playlistsRoute)
 
 
 app.get("/", async (req, res) => {

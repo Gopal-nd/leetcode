@@ -290,4 +290,31 @@ export const deleteProblemById = asyncHandler(async (req, res) => {
   }))
   })
 
-export const getUserSolvedProblems = asyncHandler(async (req, res) => {});
+export const getUserSolvedProblems = asyncHandler(async (req, res) => {
+  
+  if(!req.user) throw new APIError({status: 400, message: "User not found"})
+
+  const problems = await prisma.problems.findMany({
+  where:{
+        problemSolved: {
+          some: {
+            userId: req.user.id,
+          },
+        },
+      },
+      
+      include:{
+        problemSolved:{
+          where:{
+            userId:req.user.id
+          }
+        }
+      }
+  });
+
+  return res.json( new ApiResponse({
+    statusCode: 200,
+    data: problems,
+    message: "Success",
+  }))
+});
