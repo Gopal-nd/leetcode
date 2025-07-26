@@ -59,7 +59,7 @@ export const createProblem = asyncHandler(async (req, res) => {
           `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
         );
         if (result.status.id !== 3) {
-          return new ApiResponse({
+          return res.json(new ApiResponse({
             statusCode: 400,
             data: null,
             message: `Testcase ${
@@ -67,7 +67,7 @@ export const createProblem = asyncHandler(async (req, res) => {
             } and Language ${language} ----- result ${JSON.stringify(
               result.status.description
             )}`,
-          });
+          }))
         }
       }
     }
@@ -89,18 +89,18 @@ export const createProblem = asyncHandler(async (req, res) => {
       },
     });
 
-    return new ApiResponse({
+    res.json(new ApiResponse({
       statusCode: 200,
       data: newProblem,
       message: "Success",
-    })
+    }))
   } catch (error) {
     console.log(error);
-    return new ApiResponse({
+    res.json( new ApiResponse({
       statusCode: 400,
       data: null,
       message: `something went wrong ${error}`,
-    });
+    }))
   }
 });
 
@@ -108,18 +108,18 @@ export const getAllProblems = asyncHandler(async (req, res) => {
   const problems = await prisma.problems.findMany();
 
   if (!problems) {
-    return new ApiResponse({
+    return res.json(new ApiResponse({
       statusCode: 400,
       data: null,
       message: "No problems found",
-    });
+    }));
   }
 
-  return new ApiResponse({
+  return res.json( new ApiResponse({
     statusCode: 200,
     data: problems,
     message: "Success",
-  })
+  }))
 });
 
 export const getProblemById = asyncHandler(async (req, res) => {
@@ -134,18 +134,18 @@ export const getProblemById = asyncHandler(async (req, res) => {
   });
 
   if (!problem) {
-    return new ApiResponse({
+    return res.json( new ApiResponse({
       statusCode: 400,
       data: null,
       message: "No problems found",
-    });
+    }))
   }
 
-  return new ApiResponse({
+   res.json(new ApiResponse({
     statusCode: 200,
     data: problem,
     message: "Success",
-  })
+  }))
   })
 
 export const updateProblemById = asyncHandler(async (req, res) => {
@@ -169,11 +169,11 @@ export const updateProblemById = asyncHandler(async (req, res) => {
   });
 
   if (!problem) {
-    return new ApiResponse({
+    return res.json( new ApiResponse({
       statusCode: 400,
       data: null,
       message: "No problems found",
-    });
+    }))
   }
 
    try {
@@ -212,7 +212,7 @@ export const updateProblemById = asyncHandler(async (req, res) => {
           `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
         );
         if (result.status.id !== 3) {
-          return new ApiResponse({
+          return res.json( new ApiResponse({
             statusCode: 400,
             data: null,
             message: `Testcase ${
@@ -220,7 +220,7 @@ export const updateProblemById = asyncHandler(async (req, res) => {
             } and Language ${language} ----- result ${JSON.stringify(
               result.status.description
             )}`,
-          });
+          }))
         }
       }
     }
@@ -245,18 +245,18 @@ export const updateProblemById = asyncHandler(async (req, res) => {
       }
     });
 
-    return new ApiResponse({
+    return res.json(new ApiResponse({
       statusCode: 200,
       data: updatedProblem,
       message: "Success",
-    })
+    }))
   } catch (error) {
     console.log(error);
-    return new ApiResponse({
+    return res.json(new ApiResponse({
       statusCode: 400,
       data: null,
       message: `something went wrong ${error}`,
-    });
+    }))
   }
 
 });
@@ -270,11 +270,11 @@ export const deleteProblemById = asyncHandler(async (req, res) => {
   });
 
   if (!problem) {
-    return new ApiResponse({
+    return res.json(new ApiResponse({
       statusCode: 400,
       data: null,
       message: "No problems found",
-    });
+    }))
   }
 
   await prisma.problems.delete({
@@ -283,11 +283,11 @@ export const deleteProblemById = asyncHandler(async (req, res) => {
     },
   });
 
-  return new ApiResponse({
+  return res.json( new ApiResponse({
     statusCode: 200,
     data: null,
     message: "Success",
-  })
+  }))
   })
 
 export const getUserSolvedProblems = asyncHandler(async (req, res) => {});

@@ -4,6 +4,8 @@ import cors from 'cors'
 import type { Request, Response, NextFunction } from "express";
 
 import problemsRoute from './routes/problems.router'
+import executeCodeRoute from './routes/execute-code.router'
+
 import { auth } from "../auth";
 import errorHandler from './middleware/error.middleware';
 import {  userAuth } from './middleware/auth.middleware';
@@ -32,6 +34,9 @@ app.get("/api/me", async (req, res) => {
 });
 
 app.use("/api/v1/problems", problemsRoute)
+app.use("/api/v1/execute-code", executeCodeRoute)
+
+
 
 app.get("/", async (req, res) => {
   res.send(`${process.env.FRONTEND_URL}`)

@@ -148,8 +148,8 @@ model TestCaseResult {
   expected String
   time        String?
   memory     String?
-  passes      Boolean
-  status      SubmissionStatus
+  passed      Boolean
+  status      String
 
 
   createdAt   DateTime @default(now())
