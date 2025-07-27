@@ -17,6 +17,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   
   return (
+    <div className="flex justify-center items-center h-screen">
     <Card className="max-w-md">
       <CardHeader>
         <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
@@ -82,5 +83,7 @@ export default function SignIn() {
           </div>
         </CardFooter>
     </Card>
+    </div>
+
   );
 }
