@@ -16,17 +16,17 @@ export const createProblem = asyncHandler(async (req, res) => {
     tags,
     examples,
     constraints,
-    testCases,
+    testcases: testCases,
     codeSnippets,
     referenceSolutions,
   } = req.body;
 
-  // console.log("body", req.body);
+  console.log("body", req.body);
 
   try {
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
       const languageId = getJudge0LanguageId(language);
-
+      console.log( "languageId",languageId)
       if (!languageId) {
         throw new APIError({
           status: 400,
