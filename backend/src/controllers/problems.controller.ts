@@ -105,7 +105,7 @@ export const createProblem = asyncHandler(async (req, res) => {
 });
 
 export const getAllProblems = asyncHandler(async (req, res) => {
-  const problems = await prisma.problems.findMany();
+  const problems = await prisma.problems.findMany({include:{problemSolved: {where: {userId: req.user?.id}}}});
 
   if (!problems) {
     return res.json(new ApiResponse({

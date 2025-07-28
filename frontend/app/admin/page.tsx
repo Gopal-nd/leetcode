@@ -12,8 +12,17 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
-import { debounce } from "lodash";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { debounce, set } from "lodash";
 import Link from "next/link";
+import { de } from "zod/v4/locales";
+import { Button } from "@/components/ui/button";
 
 type Problem = {
   id: string;
@@ -87,7 +96,6 @@ const columns: ColumnDef<Problem>[] = [
           <button
             className="text-red-600 hover:underline text-sm"
             onClick={() => {
-
               alert(`Delete problem ${problem.title}`);
             }}
           >
@@ -100,16 +108,13 @@ const columns: ColumnDef<Problem>[] = [
 ];
 
 const Admin = () => {
-  const {
-    getAllProblems,
-    isProblemsLoading,
-    problems,
-  } = useProblemsStore() as {
-    getAllProblems: () => void;
-    isProblemsLoading: boolean;
-    problems: Problem[];
-  };
-
+  const { getAllProblems, isProblemsLoading, problems } =
+    useProblemsStore() as {
+      getAllProblems: () => void;
+      isProblemsLoading: boolean;
+      problems: Problem[];
+    };
+  console.log(problems);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
@@ -138,12 +143,9 @@ const Admin = () => {
 
   const filteredProblems = useMemo(() => {
     return problems.filter((problem) => {
-      const matchesDifficulty =
-        selectedDifficulty === "" || problem.difficulty === selectedDifficulty;
-      const matchesTag =
-        selectedTag === "" || problem.tags.includes(selectedTag);
-      const matchesSearch =
-        globalFilter === "" ||
+      const matchesDifficulty = selectedDifficulty === "" || problem.difficulty === selectedDifficulty;
+      const matchesTag = selectedTag === "" || problem.tags.includes(selectedTag);
+      const matchesSearch = globalFilter === "" ||
         problem.title.toLowerCase().includes(globalFilter.toLowerCase()) ||
         problem.description.toLowerCase().includes(globalFilter.toLowerCase());
       return matchesDifficulty && matchesTag && matchesSearch;
@@ -167,7 +169,9 @@ const Admin = () => {
     <div className="p-6 max-w-full">
       <h1 className="text-xl font-semibold mb-4">Admin Problems Panel</h1>
 
-      {isProblemsLoading && <p className="text-gray-500">Loading problems...</p>}
+      {isProblemsLoading && (
+        <p className="text-gray-500">Loading problems...</p>
+      )}
 
       <Input
         placeholder="Search problems..."
@@ -176,31 +180,47 @@ const Admin = () => {
       />
 
       <div className="flex gap-4 mb-4 flex-wrap">
-        <select
+        <Select
           value={selectedDifficulty}
-          onChange={(e) => setSelectedDifficulty(e.target.value)}
-          className="border px-3 py-2 rounded-md"
+          onValueChange={(e) => setSelectedDifficulty(e)}
         >
-          <option value="">All Difficulties</option>
-          {difficulties.map((diff) => (
-            <option key={diff} value={diff}>
-              {diff}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Difficulties" />
+          </SelectTrigger>
+          <SelectContent>
+            {/* <SelectItem value="">All Difficulties</SelectItem> */}
+            {difficulties.map((difficulty) => (
+              <SelectItem key={difficulty} value={difficulty}>
+                {difficulty}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <select
-          value={selectedTag}
-          onChange={(e) => setSelectedTag(e.target.value)}
-          className="border px-3 py-2 rounded-md"
+        <Select value={selectedTag} onValueChange={(e) => setSelectedTag(e)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Tags" />
+          </SelectTrigger>
+          <SelectContent>
+            {/* <SelectItem value="">All Tags</SelectItem> */}
+            {tags.map((t) => (
+              <SelectItem key={t} value={t}>
+                {t}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSelectedDifficulty("");
+            setSelectedTag("");
+            setGlobalFilter("");
+          }}
         >
-          <option value="">All Tags</option>
-          {tags.map((tag) => (
-            <option key={tag} value={tag}>
-              {tag}
-            </option>
-          ))}
-        </select>
+          clear
+        </Button>
       </div>
 
       <div className="overflow-auto rounded-md border">
@@ -239,6 +259,46 @@ const Admin = () => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex items-center justify-between mt-4">
+        {/* Previous / Next */}
+        <div className="flex gap-2">
+          <button
+            className="px-3 py-1 bg-muted rounded disabled:opacity-50"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </button>
+          <button
+            className="px-3 py-1 bg-muted rounded disabled:opacity-50"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </button>
+        </div>
+
+        {/* Page info */}
+        <span className="text-sm">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </span>
+
+        {/* Page size selector */}
+        <select
+          className="px-2 py-1 text-sm bg-muted rounded"
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value));
+          }}
+        >
+          {[5, 10, 20].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );
