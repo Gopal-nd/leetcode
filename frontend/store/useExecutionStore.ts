@@ -3,7 +3,7 @@ import { get } from "http";
 import {toast} from "sonner";
 import {create} from "zustand";
 
-export const useProblemsStore = create((set) => ({
+export const useExecutionStore = create((set) => ({
     problems: [],
     problem:null,
     solvedProblems: [],
@@ -28,7 +28,7 @@ export const useProblemsStore = create((set) => ({
     getProblemById: async (id: string) => {
         try {
             set({isProblemLoading: true});
-            const res = await axiosInstance.get(`/problems/get-problem/${id}`);
+            const res = await axiosInstance.get(`/problems/get-problem-/${id}`);
             const data = res.data;
             set({problem: data.data});
             toast.success(data.message);

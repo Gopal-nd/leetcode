@@ -131,6 +131,11 @@ export const getProblemById = asyncHandler(async (req, res) => {
     where: {
       id: id ,
     },
+    include: {
+      problemSolved: true,
+      submissions: true,
+      problemsInPlaylist: true
+    }
   });
 
   if (!problem) {
