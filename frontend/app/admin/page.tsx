@@ -1,9 +1,247 @@
-import React from 'react'
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import { useProblemsStore } from "@/store/useProblemsStore";
+import { Input } from "@/components/ui/input";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  createColumnHelper,
+  flexRender,
+  ColumnDef,
+} from "@tanstack/react-table";
+import { debounce } from "lodash";
+import Link from "next/link";
+
+type Problem = {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  tags: string[];
+};
+
+const columnHelper = createColumnHelper<Problem>();
+
+const columns: ColumnDef<Problem>[] = [
+  {
+    header: "No",
+    cell: (info) => info.row.index + 1,
+  },
+  {
+    accessorKey: "title",
+    header: "Title",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: (info) => info.getValue(),
+  },
+  {
+    accessorKey: "difficulty",
+    header: "Difficulty",
+    cell: (info) => (
+      <span
+        className={`px-2 py-1 rounded-full text-xs ${
+          info.getValue() === "EASY"
+            ? "bg-green-100 text-green-800"
+            : info.getValue() === "MEDIUM"
+            ? "bg-yellow-100 text-yellow-800"
+            : "bg-red-100 text-red-800"
+        }`}
+      >
+        {info.getValue() as string}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "tags",
+    header: "Tags",
+    cell: (info) => {
+      const row = info.row.original;
+      return row.tags.map((tag) => (
+        <span
+          key={tag}
+          className="inline-block text-xs bg-muted px-2 py-1 rounded mr-1"
+        >
+          {tag}
+        </span>
+      ));
+    },
+  },
+  {
+    header: "Actions",
+    cell: (info) => {
+      const problem = info.row.original;
+      return (
+        <div className="flex gap-2">
+          <Link
+            href={`/admin/edit/${problem.id}`}
+            className="text-blue-600 hover:underline text-sm"
+          >
+            Edit
+          </Link>
+          <button
+            className="text-red-600 hover:underline text-sm"
+            onClick={() => {
+
+              alert(`Delete problem ${problem.title}`);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      );
+    },
+  },
+];
 
 const Admin = () => {
-  return (
-    <div>Admin</div>
-  )
-}
+  const {
+    getAllProblems,
+    isProblemsLoading,
+    problems,
+  } = useProblemsStore() as {
+    getAllProblems: () => void;
+    isProblemsLoading: boolean;
+    problems: Problem[];
+  };
 
-export default Admin
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
+
+  useEffect(() => {
+    getAllProblems();
+  }, []);
+
+  const difficulties = useMemo(
+    () => Array.from(new Set(problems.map((p) => p.difficulty))).sort(),
+    [problems]
+  );
+
+  const tags = useMemo(
+    () => Array.from(new Set(problems.flatMap((p) => p.tags))).sort(),
+    [problems]
+  );
+
+  const handleSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setGlobalFilter(value);
+      }, 300),
+    []
+  );
+
+  const filteredProblems = useMemo(() => {
+    return problems.filter((problem) => {
+      const matchesDifficulty =
+        selectedDifficulty === "" || problem.difficulty === selectedDifficulty;
+      const matchesTag =
+        selectedTag === "" || problem.tags.includes(selectedTag);
+      const matchesSearch =
+        globalFilter === "" ||
+        problem.title.toLowerCase().includes(globalFilter.toLowerCase()) ||
+        problem.description.toLowerCase().includes(globalFilter.toLowerCase());
+      return matchesDifficulty && matchesTag && matchesSearch;
+    });
+  }, [problems, selectedDifficulty, selectedTag, globalFilter]);
+
+  const table = useReactTable({
+    data: filteredProblems, // ✅ Use filtered data here
+    columns,
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    // getFilteredRowModel is optional now since filtering is manual
+  });
+
+  return (
+    <div className="p-6 max-w-full">
+      <h1 className="text-xl font-semibold mb-4">Admin Problems Panel</h1>
+
+      {isProblemsLoading && <p className="text-gray-500">Loading problems...</p>}
+
+      <Input
+        placeholder="Search problems..."
+        onChange={(e) => handleSearch(e.target.value)}
+        className="mb-4 w-full max-w-md"
+      />
+
+      <div className="flex gap-4 mb-4 flex-wrap">
+        <select
+          value={selectedDifficulty}
+          onChange={(e) => setSelectedDifficulty(e.target.value)}
+          className="border px-3 py-2 rounded-md"
+        >
+          <option value="">All Difficulties</option>
+          {difficulties.map((diff) => (
+            <option key={diff} value={diff}>
+              {diff}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedTag}
+          onChange={(e) => setSelectedTag(e.target.value)}
+          className="border px-3 py-2 rounded-md"
+        >
+          <option value="">All Tags</option>
+          {tags.map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="overflow-auto rounded-md border">
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-muted">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="cursor-pointer px-4 py-2 font-medium"
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {{
+                      asc: " 🔼",
+                      desc: " 🔽",
+                    }[header.column.getIsSorted() as string] ?? ""}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-t">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2 align-top">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default Admin;
