@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/user/UserSidebar";
 import Profile from "@/components/Profile";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
             </div>
             <div className="flex items-center gap-2 ml-2">
+                          <ModeToggle />
+              
               <Profile />
             </div>
           </div>

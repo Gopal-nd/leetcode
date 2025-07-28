@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useSession } from "@/lib/auth-client";
 import Logout from "./Logout";
+import { ModeToggle } from "./ModeToggle";
 const Profile = () => {
   const { data: session } = useSession();
 

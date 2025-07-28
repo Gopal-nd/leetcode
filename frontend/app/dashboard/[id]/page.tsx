@@ -24,6 +24,7 @@ const ProblemPage = () => {
     getProblemById(id as string);
   },[])
   console.log(problem)
+  if(!problem) return <div>loading</div>
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] ">
       {/* <div className='h-10 p-1 flex items-center justify-between'>
@@ -69,9 +70,7 @@ const ProblemPage = () => {
           <ResizablePanel>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={75}>
-                <div className="flex flex-col h-screen">
-                  <p>editor</p>
-                </div>
+                <CodeEditor problem={problem}/>
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel defaultSize={25}>
@@ -113,6 +112,7 @@ import Hints from "@/components/user/editor/Hints";
 import Solutions from "@/components/user/editor/Solutions";
 import { Sub } from "@radix-ui/react-dropdown-menu";
 import Submissions from "@/components/user/editor/Submissions";
+import CodeEditor from "@/components/user/CodeEditor";
 
 
 export function TabsDemo() {

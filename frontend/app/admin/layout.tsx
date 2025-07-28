@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/AdminSidebar";
 import Profile from "@/components/Profile";
 import Link from "next/link";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             </div>
             <div className="flex items-center gap-2 ml-2">
+              <ModeToggle />   
               <Profile />
             </div>
           </div>
