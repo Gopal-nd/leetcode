@@ -74,9 +74,7 @@ const ProblemPage = () => {
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel defaultSize={25}>
-                <div className="flex flex-col h-full">
-                  <p>output</p>
-                </div>
+               <OutPut problem={problem}/>
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
@@ -113,6 +111,7 @@ import Solutions from "@/components/user/editor/Solutions";
 import { Sub } from "@radix-ui/react-dropdown-menu";
 import Submissions from "@/components/user/editor/Submissions";
 import CodeEditor from "@/components/user/CodeEditor";
+import OutPut from "@/components/user/OutPut";
 
 
 export function TabsDemo() {

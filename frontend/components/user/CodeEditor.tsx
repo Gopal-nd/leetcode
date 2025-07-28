@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import {
@@ -11,6 +12,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Problem } from "@/types/Problem";
+import { useProblemLanguageStore } from "@/store/useProblemsStore";
+import { Button } from "../ui/button";
 
 const CodeEditor = ({ problem }: { problem: Problem }) => {
   const [languages, setLanguages] = React.useState<{
@@ -29,6 +32,10 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
 
     return languageMap[language];
   }
+  const { lang, setLang } = useProblemLanguageStore() as {
+    lang: string;
+    setLang: (language: string) => void;
+  };
 
   const languagesList = [
     {
@@ -46,24 +53,33 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
   ];
 
   useEffect(() => {
-    setCode(problem.codeSnippets['JAVASCRIPT']);
+    setCode(problem.codeSnippets["JAVASCRIPT"]);
   }, []);
 
-useEffect(() => {
-    setCode(problem.codeSnippets[languages.language.toUpperCase() as keyof typeof problem.codeSnippets]);
-}, [problem, languages.language]);
+  useEffect(() => {
+    setCode(
+      problem.codeSnippets[
+        languages.language.toUpperCase() as keyof typeof problem.codeSnippets
+      ]
+    );
+  }, [problem, languages.language]);
 
   const handleLanguageChange = (language: string) => {
     setLanguages({
       language,
       code: getJudge0LanguageId(language),
     });
+    setLang(language);
   };
 
   return (
     <div className="flex flex-col">
       <div className="h-10 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{">_ Code Editor"}</h1>
+        <h1 className="text-2xl p-2 font-bold">{">_ Code Editor"}</h1>
+               <div className="h-10 flex items-center justify-between gap-3">
+        <Button className="bg-blue-600">Run</Button>
+        <Button className="bg-red-600">Submit</Button>
+      </div>
         <div>
           <Select
             onValueChange={handleLanguageChange}
@@ -84,7 +100,10 @@ useEffect(() => {
           </Select>
         </div>
       </div>
-      <div className="h-[70vh]">
+      <div>
+
+
+      <div className="h-[70vh] flex-col-reverse">
         <Editor
           className="mt-1 rounded border border-b-0 h-full"
           height="100%"
@@ -109,8 +128,10 @@ useEffect(() => {
               handleMouseWheel: true,
             },
           }}
-        />
+          />
       </div>
+ 
+          </div>
     </div>
   );
 };

@@ -55,3 +55,8 @@ export const useProblemsStore = create((set) => ({
         }
     },
 }));
+
+export const useProblemLanguageStore = create((set) => ({
+    lang: 'JAVASCRIPT',
+    setLang: (lang: string) => set({ lang }),
+}));

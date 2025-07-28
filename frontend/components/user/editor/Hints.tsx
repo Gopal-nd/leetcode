@@ -3,7 +3,9 @@ import React from 'react'
 
 const Hints = ({problem}:{problem:Problem}) => {
   return (
-    <div>Hints</div>
+    <div className='p-4 '>
+      <p className='text-lg '>{problem.hints}</p>
+    </div>
   )
 }
 
