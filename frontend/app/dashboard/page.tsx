@@ -24,6 +24,8 @@ import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import PlaylistModel from "@/components/PlayListModel";
+import { Bookmark, Save, SaveIcon } from "lucide-react";
 
 type Problem = {
   id: string;
@@ -48,22 +50,18 @@ const columns: ColumnDef<Problem>[] = [
     header: "Solved",
     accessorKey: "problemSolved",
     cell: (info) => {
-      const row = info.row.original;
-      return row.problemSolved.problemId === row.id && row.problemSolved.userId === session?.user.id ? (
+      const row = info.row.original as any
+      const ref = row.problemSolved[0]?.problemId.includes(row.id) && row.problemSolved[0]?.userId ===session?.user.id
+      return ref ? (
         <Checkbox checked disabled/>
       ) : (
         <Checkbox  disabled/>
       )
     },
   },
-  {
+  { 
     accessorKey: "title",
     header: "Title",
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
     cell: (info) => info.getValue(),
   },
   {
@@ -98,6 +96,16 @@ const columns: ColumnDef<Problem>[] = [
       ));
     },
   },
+    { 
+    header: "Save to Playlist",
+    cell: (info) => (
+      
+        <Button variant={'outline'} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <Bookmark />Save To Playlist
+        </Button>
+      
+    ),
+  },
   {
     header: "Actions",
     cell: (info) => (
@@ -113,11 +121,7 @@ const columns: ColumnDef<Problem>[] = [
     getAllProblems,
     isProblemsLoading,
     problems,
-  } = useProblemsStore() as {
-    getAllProblems: () => void;
-    isProblemsLoading: boolean;
-    problems: Problem[];
-  };
+  } = useProblemsStore();
   console.log(problems);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
@@ -160,7 +164,7 @@ const columns: ColumnDef<Problem>[] = [
   }, [problems, selectedDifficulty, selectedTag, globalFilter]);
 
   const table = useReactTable({
-    data: filteredProblems,
+    data: filteredProblems as any,
     columns,
     state: {
       globalFilter,
@@ -176,12 +180,17 @@ const columns: ColumnDef<Problem>[] = [
       <h1 className="text-xl font-semibold mb-4">Problems </h1>
 
       {isProblemsLoading && <p className="text-gray-500">Loading problems...</p>}
+      <div className="flex justify-between items-center">
 
       <Input
         placeholder="Search problems..."
         onChange={(e) => handleSearch(e.target.value)}
         className="mb-4 w-full max-w-md"
-      />
+        />
+
+      
+        <PlaylistModel />
+        </div>
 
       <div className="flex gap-4 mb-4 flex-wrap">
         <Select
