@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,6 +26,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { axiosInstance } from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Problem } from "@/types/Problem";
 
 
 // Types
@@ -238,11 +239,12 @@ const sampleStringData: FormData = {
   }
 };
 
-const CreateProblemForm: React.FC = () => {
+const EditProblemForm = ({problem,id}:{problem:Problem,id:string}) => {
   const [sampleType, setSampleType] = useState<"DP" | "string">("DP");
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<Language>("JAVASCRIPT");
 
+  console.log(problem)
   const router = useRouter();
   const {
     register,
@@ -253,31 +255,19 @@ const CreateProblemForm: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(problemSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      hints: "",
-      constraints: "",
-      difficulty: "EASY",
-      editorial: "",
-      testcases: [{ input: "", output: "" }],
-      tags: [],
-      examples: {
-        JAVASCRIPT: { input: "", output: "", explanation: "" },
-        PYTHON: { input: "", output: "", explanation: "" },
-        JAVA: { input: "", output: "", explanation: "" },
-      },
-      codeSnippets: {
-        JAVASCRIPT: "function solution() {\n  // Write your code here\n}",
-        PYTHON: "def solution():\n    # Write your code here\n    pass",
-        JAVA: "public class Solution {\n    public static void main(String[] args) {\n        // Write your code here\n    }\n}",
-      },
-      referenceSolutions: {
-        JAVASCRIPT: "// Add your reference solution here",
-        PYTHON: "# Add your reference solution here",
-        JAVA: "// Add your reference solution here",
-      },
-    },
+    defaultValues:{...problem,
+        title: problem.title,
+      description: problem.description,
+      hints: problem?.hints ||"",
+      constraints: problem.constraints,
+      difficulty: problem.difficulty,
+      editorial: problem.editorial||"",
+      testcases: problem.testCases.map((testCase) => ({
+        input: testCase.input,
+        output: testCase.output,
+      })),
+      tags: problem.tags.map((tag) => tag),
+    }
   });
 
   const {
@@ -293,7 +283,7 @@ const CreateProblemForm: React.FC = () => {
 
   // custom FieldArray for the Tages
   
-  const [tagFields, setTagFields] = useState<string[]>([""]);
+  const [tagFields, setTagFields] = useState<string[]>(problem.tags.map((tag) => tag));
   const appendTag = (tag: string) => setTagFields((prev) => [...prev, tag]);
   const removeTag = (index: number) => setTagFields((prev) => prev.length > 1 ? prev.filter((_, i) => i !== index) : prev);
   const replaceTags = (tags: string[]) => setTagFields(tags);
@@ -301,12 +291,16 @@ const CreateProblemForm: React.FC = () => {
   useEffect(() => {
     setValue("tags", tagFields);
   }, [tagFields, setValue]);
+  useEffect(() => {
+    
+  },[])
+
 
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
       console.log("Creating problem:", data);
-      const res = await axiosInstance.post("/problems/create-problem", data);
+      const res = await axiosInstance.put(`/problems/update-problem/${id}`, data);
       console.log(res.data);
       toast.success(res.data.message || "Problem Created successfully⚡");
       // router.push('/dashboard')
@@ -585,12 +579,12 @@ const CreateProblemForm: React.FC = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating...
+                  Updating...
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Create Problem
+                  Update
                 </>
               )}
             </Button>
@@ -601,4 +595,4 @@ const CreateProblemForm: React.FC = () => {
   );
 };
 
-export default CreateProblemForm;
+export default EditProblemForm;

@@ -23,6 +23,8 @@ import { debounce, set } from "lodash";
 import Link from "next/link";
 import { de } from "zod/v4/locales";
 import { Button } from "@/components/ui/button";
+import { axiosInstance } from "@/lib/axios";
+import { toast } from "sonner";
 
 type Problem = {
   id: string;
@@ -34,7 +36,43 @@ type Problem = {
 
 const columnHelper = createColumnHelper<Problem>();
 
-const columns: ColumnDef<Problem>[] = [
+
+
+const Admin = () => {
+  const { getAllProblems, isProblemsLoading, problems } =
+    useProblemsStore() as {
+      getAllProblems: () => void;
+      isProblemsLoading: boolean;
+      problems: Problem[];
+    };
+  console.log(problems);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
+
+  useEffect(() => {
+    getAllProblems();
+  }, []);
+
+  const difficulties = useMemo(
+    () => Array.from(new Set(problems.map((p) => p.difficulty))).sort(),
+    [problems]
+  );
+
+  const tags = useMemo(
+    () => Array.from(new Set(problems.flatMap((p) => p.tags))).sort(),
+    [problems]
+  );
+
+  const handleSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setGlobalFilter(value);
+      }, 300),
+    []
+  );
+
+  const columns: ColumnDef<Problem>[] = [
   {
     header: "No",
     cell: (info) => info.row.index + 1,
@@ -96,7 +134,7 @@ const columns: ColumnDef<Problem>[] = [
           <button
             className="text-red-600 hover:underline text-sm"
             onClick={() => {
-              alert(`Delete problem ${problem.title}`);
+             handleDelete(problem.id);
             }}
           >
             Delete
@@ -106,40 +144,6 @@ const columns: ColumnDef<Problem>[] = [
     },
   },
 ];
-
-const Admin = () => {
-  const { getAllProblems, isProblemsLoading, problems } =
-    useProblemsStore() as {
-      getAllProblems: () => void;
-      isProblemsLoading: boolean;
-      problems: Problem[];
-    };
-  console.log(problems);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("");
-  const [selectedTag, setSelectedTag] = useState("");
-
-  useEffect(() => {
-    getAllProblems();
-  }, []);
-
-  const difficulties = useMemo(
-    () => Array.from(new Set(problems.map((p) => p.difficulty))).sort(),
-    [problems]
-  );
-
-  const tags = useMemo(
-    () => Array.from(new Set(problems.flatMap((p) => p.tags))).sort(),
-    [problems]
-  );
-
-  const handleSearch = useMemo(
-    () =>
-      debounce((value: string) => {
-        setGlobalFilter(value);
-      }, 300),
-    []
-  );
 
   const filteredProblems = useMemo(() => {
     return problems.filter((problem) => {
@@ -165,6 +169,17 @@ const Admin = () => {
     // getFilteredRowModel is optional now since filtering is manual
   });
 
+
+  async function handleDelete  (problemId: string) {
+    try {
+      await axiosInstance.delete(`/problems/delete-problem/${problemId}`);
+      getAllProblems();
+      toast.success("Problem deleted successfully");
+    } catch (error) {
+      console.log("Error deleting problem", error);
+      toast.error("Error deleting problem");
+    }
+  }
   return (
     <div className="p-6 max-w-full">
       <h1 className="text-xl font-semibold mb-4">Admin Problems Panel</h1>

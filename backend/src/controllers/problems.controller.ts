@@ -19,6 +19,9 @@ export const createProblem = asyncHandler(async (req, res) => {
     testcases: testCases,
     codeSnippets,
     referenceSolutions,
+    hints,
+    editorial,
+
   } = req.body;
 
   console.log("body", req.body);
@@ -86,6 +89,8 @@ export const createProblem = asyncHandler(async (req, res) => {
         codeSnippets,
         referenceSolutions,
         userId: req.user?.id,
+        hints,
+        editorial
       },
     });
 
@@ -163,8 +168,10 @@ export const updateProblemById = asyncHandler(async (req, res) => {
     tags,
     examples,
     constraints,
-    testCases,
+    testcases: testCases,
     codeSnippets,
+        hints,
+    editorial,
     referenceSolutions,
   } = req.body;
   const problem = await prisma.problems.findUnique({
@@ -242,6 +249,8 @@ export const updateProblemById = asyncHandler(async (req, res) => {
         constraints,
         testCases,
         codeSnippets,
+            hints,
+    editorial,
         referenceSolutions,
         userId: req.user?.id,
       },

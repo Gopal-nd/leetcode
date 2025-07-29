@@ -1,17 +1,11 @@
 import { Problem, SubmissionDetails } from "@/types/Problem";
 import React from "react";
-// import {
-//   Accordion,
-//   AccordionContent,
-//   AccordionItem,
-//   AccordionTrigger,
-// } from "@/components/ui/accordion";
 
 const Submissions = ({ problem }: { problem: Problem }) => {
   const sub = problem.submissions as unknown as SubmissionDetails[];
   return (
     <div>
- 
+      {sub.length === 0 && <p className="p-2 text-center">No submissions yet</p>}
       <div className="p-2 border-b flex flex-col gap-2 ">
         {sub.map((submission: SubmissionDetails, i) => (
 
