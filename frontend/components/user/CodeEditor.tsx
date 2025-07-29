@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import {
   Select,
@@ -11,31 +11,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Problem } from "@/types/Problem";
-import { useProblemLanguageStore } from "@/store/useProblemsStore";
+import { Problem, TestCaseResult } from "@/types/Problem";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useOutputResponse } from "@/store/useOutputResponse";
+import { useProblemLanguageStore } from "@/store/useProblemsStore";
 
 const CodeEditor = ({ problem }: { problem: Problem }) => {
-  const [languages, setLanguages] = React.useState<{
+  const [languages, setLanguages] = useState<{
     language: string;
     code: number;
   }>({ language: "javascript", code: 63 });
+
+  const {
+    testcases,
+    status,
+    setTestCases,
+    setStatus,
+    scrollTargetRef,
+    setScrollTargetRef,
+  } = useOutputResponse();
+
+   const ref = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
+  useEffect(() => {
+    setScrollTargetRef(ref);
+  }, []);
+
+
   const [res, setRes] = React.useState();
   const [code, setCode] = React.useState<string>("");
-  const { executeCode, isExecuting, submission } =
-    useProblemLanguageStore() as {
-      executeCode: (
-        source_code: string,
-        language_id: number,
-        stdin: string[],
-        expected_outputs: string[],
-        problemId: string
-      ) => void;
-      isExecuting: boolean;
-      submission: any;
-    };
 
   function getJudge0LanguageId(language: string) {
     const languageMap: { [key: string]: number } = {
@@ -47,10 +54,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
 
     return languageMap[language];
   }
-  const { lang, setLang } = useProblemLanguageStore() as {
-    lang: string;
-    setLang: (language: string) => void;
-  };
+  const { lang, setLang } = useProblemLanguageStore();
 
   const languagesList = [
     {
@@ -87,9 +91,8 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
     setLang(language);
   };
 
-  const handleCodeSubmit = async (e: any) => {
-    e.preventDefault();
-    try {
+  const { mutate: SubmitCode, isPending: isSubmitting } = useMutation({
+    mutationFn: async () => {
       const stdin = problem.testCases.map((testCase) => testCase.input);
       const expected_output = problem.testCases.map(
         (testCase) => testCase.output
@@ -101,13 +104,64 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
         expected_outputs: expected_output,
         problemId: problem.id,
       });
+      return result.data;
+    },
 
-      setRes(result.data.data);
-      console.log(result.data.data);
-    } catch (error) {
-      console.log("Error executing code", error);
-    }
-  };
+    onSuccess: (data) => {
+      // Invalidate and refetch
+      setRes(data.data);
+      setTestCases([]);
+      setStatus("");
+      setTestCases(data.data.testCases);
+      setStatus(data.data.status);
+
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+
+      toast.success(data.message || "Code submitted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Error submitting code");
+    },
+  });
+
+  const { mutate: Runcode, isPending: isRunning } = useMutation({
+    mutationFn: async () => {
+      const stdin = problem.testCases.map((testCase) => testCase.input);
+      const expected_output = problem.testCases.map(
+        (testCase) => testCase.output
+      );
+      const result = await axiosInstance.post("/execute-code/run", {
+        source_code: code,
+        language_id: languages.code,
+        stdin: stdin,
+        expected_outputs: expected_output,
+        problemId: problem.id,
+      });
+      return result.data;
+    },
+    onSuccess: (data) => {
+      // Invalidate and refetch
+      setRes(data.data);
+      setTestCases([]);
+      setStatus("");
+      setTestCases(data.data.testCases);
+      setStatus(data.data.status);
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+      toast.success(data.message || "Code submitted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Error submitting code");
+    },
+  });
+  if (res) {
+    console.log(res);
+  }
 
   return (
     <div className="flex flex-col">
@@ -115,12 +169,12 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
         <h1 className="text-2xl p-2 font-bold">{">_ Code Editor"}</h1>
         <div className="h-10 flex items-center justify-between gap-3">
           <Button
-            disabled={isExecuting}
+            disabled={isRunning}
             className={"bg-green-600"}
-            onClick={handleCodeSubmit}
+            onClick={() => Runcode()}
           >
             {" "}
-            {isExecuting ? (
+            {isRunning ? (
               <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
             ) : (
               ""
@@ -128,9 +182,13 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
             Run
           </Button>
 
-          <Button disabled={isExecuting} className={"bg-red-600"}>
+          <Button
+            disabled={isSubmitting}
+            onClick={() => SubmitCode()}
+            className={"bg-red-600"}
+          >
             {" "}
-            {isExecuting ? (
+            {isSubmitting ? (
               <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
             ) : (
               ""

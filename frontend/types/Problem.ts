@@ -108,3 +108,17 @@ type submissionWithTestCases  = {
     createdAt: Date;
     updatedAt: Date;
 } | null
+
+
+
+export type TestCaseResult = {
+  testCase: number;
+  passed: boolean;
+  stdout: string;
+  expected: string;
+  stderr: string | null;
+  compileOutput: string | null;
+  time: string;     // e.g., "0.017 s"
+  memory: string;   // e.g., "7512 KB"
+  status: "Accepted" | "Wrong Answer" | "Runtime Error" | "Compilation Error" | string;
+};

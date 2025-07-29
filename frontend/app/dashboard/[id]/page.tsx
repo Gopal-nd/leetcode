@@ -12,10 +12,21 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { useOutputResponse } from "@/store/useOutputResponse";
+import { useProblemsStore } from "@/store/useProblemsStore";
+import { Problem } from "@/types/Problem";
+import Description from "@/components/user/editor/Description";
+import Submissions from "@/components/user/editor/Submissions";
+import Solutions from "@/components/user/editor/Solutions";
+import Hints from "@/components/user/editor/Hints";
+import CodeEditor from "@/components/user/CodeEditor";
+import OutPut from "@/components/user/OutPut";
+import TestCases from "@/components/user/TestCases";
 const ProblemPage = () => {
   const params = useParams();
   const id = params.id;
   console.log(id);
+    const {testcases,status}= useOutputResponse() 
   const {getProblemById, problem} = useProblemsStore() as {
     getProblemById: (id: string) => void;
     problem: Problem;
@@ -25,7 +36,9 @@ const ProblemPage = () => {
   },[])
   console.log(problem)
   if(!problem) return <div>loading</div>
+
   return (
+    <>
     <div className="flex flex-col h-[calc(100vh-4rem)] ">
       {/* <div className='h-10 p-1 flex items-center justify-between'>
             <div>
@@ -81,6 +94,11 @@ const ProblemPage = () => {
         </ResizablePanelGroup>
       </div>
     </div>
+    {status && testcases && (
+    <TestCases />
+    )}
+    </>
+
   );
 };
 
@@ -88,89 +106,3 @@ export default ProblemPage;
 
 
 
-
-
-import { AppWindowIcon, CodeIcon } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useProblemsStore } from "@/store/useProblemsStore";
-import { Problem } from "@/types/Problem";
-import Description from "@/components/user/editor/Description";
-import Hints from "@/components/user/editor/Hints";
-import Solutions from "@/components/user/editor/Solutions";
-import { Sub } from "@radix-ui/react-dropdown-menu";
-import Submissions from "@/components/user/editor/Submissions";
-import CodeEditor from "@/components/user/CodeEditor";
-import OutPut from "@/components/user/OutPut";
-
-
-export function TabsDemo() {
-  return (
-    <div className="flex w-full max-w-sm flex-col gap-6">
-      <Tabs defaultValue="account">
-        <TabsList>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
-        </TabsList>
-        <TabsContent value="account">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account</CardTitle>
-              <CardDescription>
-                Make changes to your account here. Click save when you&apos;re
-                done.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-name">Name</Label>
-                <Input id="tabs-demo-name" defaultValue="Pedro Duarte" />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-username">Username</Label>
-                <Input id="tabs-demo-username" defaultValue="@peduarte" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save changes</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="password">
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>
-                Change your password here. After saving, you&apos;ll be logged
-                out.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-current">Current password</Label>
-                <Input id="tabs-demo-current" type="password" />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-new">New password</Label>
-                <Input id="tabs-demo-new" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save password</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
-}

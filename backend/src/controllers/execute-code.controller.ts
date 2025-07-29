@@ -124,3 +124,71 @@ export const executeCode = asyncHandler(async (req, res) => {
         statusCode:200
     }))
 })
+
+
+
+export const RunCode = asyncHandler(async (req, res) => {
+
+    const {source_code, language_id, stdin, expected_outputs, problemId} = req.body
+
+    console.log(req.body)
+
+    // validation tests
+    if (!Array.isArray(stdin) || !Array.isArray(expected_outputs)||stdin.length !== expected_outputs.length || !source_code || !language_id || stdin.length ===0 || !problemId) {
+        throw new APIError({
+            status: 400,
+            message: "Invalid request body",
+        })
+    }
+
+    // prepare each test case
+    const submissions = stdin.map((input, index) => ({
+        source_code: source_code,
+        language_id: language_id,
+        stdin: input,
+    }))
+
+
+    // send batch of submmissions to judge0
+    const submissionResults = await submitBatch(submissions)
+
+    const tokens = submissionResults.map((res: any) => res.token)
+    
+    // poll for results
+    const results = await pollBatchResults(tokens)
+
+    console.log("results", results)
+
+
+    // validate results
+    let isAllPassed = true;
+    const detailsResults = results.map((result: any, index: number) => {
+        const stdout = result.stdout?.trim();
+        const expected_output = expected_outputs[index].trim();
+        if (stdout !== expected_output) {
+            isAllPassed = false;
+        }
+        const passed = stdout === expected_output;
+        return {
+            testCase: index + 1,
+            passed,
+            stdout,
+            expected:expected_output,
+            stderr: result.stderr||null,
+            compileOutput: result.compile_output ||null,
+            time: result.time ? `${result.time} s`:undefined,
+            memory: result.memory ?`${result.memory} KB`:undefined,
+            status:result.status.description
+        };
+    })
+    console.log(detailsResults)
+
+    return res.json(new ApiResponse({
+        message: "Success",
+        data:{
+            testCases:detailsResults,
+            status:isAllPassed?"ACCEPTED":"REJECTED"
+        },
+        statusCode:200
+    }))
+})

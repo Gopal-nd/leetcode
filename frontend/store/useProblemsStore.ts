@@ -1,9 +1,20 @@
 import { axiosInstance } from "@/lib/axios";
+import { Problem } from "@/types/Problem";
 import { get } from "http";
 import {toast} from "sonner";
 import {create} from "zustand";
 
-export const useProblemsStore = create((set) => ({
+interface ProblemsStore {
+    problems: Problem[],
+    problem: Problem | null,
+    solvedProblems: Problem[],
+    isProblemLoading: boolean,
+    isProblemsLoading: boolean,
+    getAllProblems: () => Promise<void>,
+    getProblemById: (id: string) => Promise<void>,
+    getSolvedProblems: () => Promise<void>
+}
+export const useProblemsStore= create<ProblemsStore> ((set) => ({
     problems: [],
     problem:null,
     solvedProblems: [],
@@ -56,7 +67,12 @@ export const useProblemsStore = create((set) => ({
     },
 }));
 
-export const useProblemLanguageStore = create((set) => ({
+
+interface ProblemLanguageStore {
+    lang: string,
+    setLang: (lang: string) => void
+}
+export const useProblemLanguageStore = create<ProblemLanguageStore>((set) => ({
     lang: 'JAVASCRIPT',
     setLang: (lang: string) => set({ lang }),
 }));
