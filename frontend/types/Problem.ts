@@ -45,3 +45,66 @@ export type Problem = {
   createdAt: string;
   updatedAt: string;
 };
+
+
+
+export type SubmissionStatus =
+  | "ACCEPTED"
+  | "WRONG_ANSWER"
+  | "TIME_LIMIT_EXCEEDED"
+  | "COMPILE_ERROR"
+  | "RUNTIME_ERROR"
+  | "PENDING"
+  | "FAILED";
+
+export type SubmissionDetails = {
+  id: string;
+  userId: string;
+  problemId: string;
+  sourceCode: string;
+  language: Language; // Expand this if more languages are supported
+  stdout: string[]; // Output of each test case
+  stderr: (string | null)[];
+  stdin: string; // All test case inputs in one string
+  compileOutput: (string | null)[];
+  time: string[]; // Execution time per test case, e.g., ["0.018 s"]
+  memory: string[]; // Memory usage per test case, e.g., ["7472 KB"]
+  status: SubmissionStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+
+type submissionWithTestCases  = {
+    testCases: {
+        id: string;
+        stdout: string | null;
+        stderr: string | null;
+        stdin: string | null;
+        compileOutput: string | null;
+        time: string | null;
+        memory: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        submissionId: string;
+        testCase: number;
+        expected: string;
+        passed: boolean;
+    }[];
+} & {
+    id: string;
+    userId: string;
+    problemId: string;
+    sourceCode: string;
+    language: string;
+    stdout: string | null;
+    stderr: string | null;
+    stdin: string | null;
+    compileOutput: string | null;
+    time: string | null;
+    memory: string | null;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+} | null

@@ -1,57 +1,36 @@
-import { axiosInstance } from "@/lib/axios";
-import { get } from "http";
-import {toast} from "sonner";
 import {create} from "zustand";
+import { axiosInstance } from "../lib/axios";
+import { toast } from "sonner";
 
-export const useExecutionStore = create((set) => ({
-    problems: [],
-    problem:null,
-    solvedProblems: [],
-    isProblemLoading: false,
-    isProblemsLoading: false,
 
-    getAllProblems: async () => {
+
+export const useExecutionStore = create((set)=>({
+    isExecuting:false,
+    submission:null,
+
+    // source_code, language_id, stdin, expected_outputs, problemId}
+
+       executeCode:async ( source_code:string, language_id:number, stdin:string[], expected_outputs:string[], problemId:string)=>{
         try {
-            set({isProblemsLoading: true});
-            const res = await axiosInstance.get('/problems/get-all-problems');
-            const data = res.data;
-            set({problems: data.data});
-            toast.success(data.message);
-        } catch (error) {
-            toast.error("Something went wrong in Fetching");
-            console.error(error);
-        } finally {
-            set({isProblemsLoading: false});
-        }
-    },
+            set({isExecuting:true});
+            console.log("Submission:",JSON.stringify({
+                source_code,
+                language_id,
+                stdin,
+                expected_outputs,
+                problemId
+            }));
+            const res = await axiosInstance.post("/execute-code" , { source_code, language_id, stdin, expected_outputs, problemId });
 
-    getProblemById: async (id: string) => {
-        try {
-            set({isProblemLoading: true});
-            const res = await axiosInstance.get(`/problems/get-problem-/${id}`);
-            const data = res.data;
-            set({problem: data.data});
-            toast.success(data.message);
+            set({submission:res.data.data});
+      
+            toast.success(res.data.message);
         } catch (error) {
-            toast.error("Something went wrong in Fetching problem " + id);
-            console.error(error);
-        } finally {
-            set({isProblemLoading: false});
+            console.log("Error executing code",error);
+            toast.error("Error executing code");
         }
-    },
-
-    getSolvedProblems: async () => {
-        try {
-            set({isProblemsLoading: true});
-            const res = await axiosInstance.get('/problems/get-solved-problems');
-            const data = res.data;
-            set({solvedProblems: data.data});
-            toast.success(data.message);
-        } catch (error) {
-            toast.error("Something went wrong in Fetching");
-            console.error(error);
-        } finally {
-            set({isProblemsLoading: false});
+        finally{
+            set({isExecuting:false});
         }
-    },
-}));
+    }
+}))

@@ -8,6 +8,8 @@ export const executeCode = asyncHandler(async (req, res) => {
 
     const {source_code, language_id, stdin, expected_outputs, problemId} = req.body
 
+    console.log(req.body)
+
     // validation tests
     if (!Array.isArray(stdin) || !Array.isArray(expected_outputs)||stdin.length !== expected_outputs.length || !source_code || !language_id || stdin.length ===0 || !problemId) {
         throw new APIError({
