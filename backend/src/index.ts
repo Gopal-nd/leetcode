@@ -7,6 +7,8 @@ import problemsRoute from './routes/problems.router'
 import executeCodeRoute from './routes/execute-code.router'
 import submissionsRoute from './routes/execute-code.router'
 import playlistsRoute from './routes/playlist.router'
+import heatmapRoute from './routes/heatmap.router'
+
 
 
 
@@ -42,6 +44,7 @@ app.use("/api/v1/problems", problemsRoute)
 app.use("/api/v1/execute-code", executeCodeRoute)
 app.use("/api/v1/submissions", submissionsRoute)
 app.use("/api/v1/playlists", playlistsRoute)
+app.use("/api/v1/heatmap", heatmapRoute)
 
 
 app.get("/", async (req, res) => {

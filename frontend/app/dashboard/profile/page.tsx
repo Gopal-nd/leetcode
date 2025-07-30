@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { useSession } from '@/lib/auth-client'
 import Logout from '@/components/Logout'
+import Heatmap from '@/components/user/CalanderHeatMap'
 
 
 const Spinner: React.FC = () => (
@@ -25,6 +26,7 @@ const ProfilePage: React.FC = () => {
   } = useSession()
 
   return (
+    <>
     <div className="p-4 w-full mx-auto">
       <Card>
         <CardHeader>
@@ -33,20 +35,20 @@ const ProfilePage: React.FC = () => {
         <Separator />
         <CardContent>
           {isPending && (
-            <div className="flex justify-center py-8">
+              <div className="flex justify-center py-8">
               <Spinner />
             </div>
           )}
 
           {error && (
-            <Alert>
+              <Alert>
               <AlertTitle>Session Error</AlertTitle>
               <AlertDescription>
                 {error.message}.{' '}
                 <button
                   onClick={() => refetch()}
                   className="underline hover:no-underline"
-                >
+                  >
                   Retry
                 </button>
               </AlertDescription>
@@ -54,12 +56,12 @@ const ProfilePage: React.FC = () => {
           )}
 
           {session && (
-            <div className="space-y-6">
+              <div className="space-y-6">
               <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
                   {session.user.image ? (
                     <AvatarImage src={session.user.image} alt={session.user.name} />
-                  ) : (
+                ) : (
                     <AvatarFallback>{session.user.name.charAt(0)}</AvatarFallback>
                   )}
                 </Avatar>
@@ -102,6 +104,8 @@ const ProfilePage: React.FC = () => {
         </CardContent>
       </Card>
     </div>
+    <Heatmap />
+          </>
   )
 }
 
