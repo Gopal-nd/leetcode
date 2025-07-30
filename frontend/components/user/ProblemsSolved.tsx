@@ -26,13 +26,13 @@ const ProblemsSolved = () => {
         </div>
        {data && <div className='flex gap-2 items-center justify-evenly'>
             <p className='font-bold text-green-500 border p-4 rounded-2xl'>
-                {/* {data?.difficultyCount["EASY"] ? data.difficultyCount.EASY : 0} EASY */}
+                {data?.difficultyCount["EASY"] ? data.difficultyCount.EASY : 0} EASY
             </p>
              <p className='font-bold text-yellow-500 border p-4 rounded-2xl'>
-                {/* {data?.difficultyCount["MEDIUM"] ? data.difficultyCount.MEDIUM : 0} EASY */}
+                {data?.difficultyCount["MEDIUM"] ? data.difficultyCount.MEDIUM : 0} MEDIUM
             </p>
              <p className='font-bold text-red-500 border p-4 rounded-2xl'>
-                {/* {data?.difficultyCount["HARD"]? data.difficultyCount.HARD : 0} EASY */}
+                {data?.difficultyCount["HARD"]? data.difficultyCount.HARD : 0} HARD
             </p>
         </div>}
     </div>

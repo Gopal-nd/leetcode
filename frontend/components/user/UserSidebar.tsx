@@ -28,6 +28,11 @@ const items = [
     url: "/dashboard/profile",
     icon: UserRound,
   },
+     {
+    title: "Collab",
+    url: "/dashboard/collab",
+    icon: Inbox,
+  },
  
 ]
 
