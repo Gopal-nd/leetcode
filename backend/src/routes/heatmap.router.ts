@@ -23,40 +23,25 @@ export const heatmapRouter = asyncHandler(async (req, res) => {
                     problem: {
                         select: {
                             id: true,
-                            title: true,
-                            _count: {
-                                select: {
-                                    submissions: true
-                                }
-                            },
-
-                        }
+                        },
+                        
                     },
-
                     createdAt  : true
+
                 }
             }
         }
     })
-    console.log("user", user)
-    let count = 0
-    let outDates:string ;
-const raw = user?.submissions.map((sub) => {
-  const date = new Date(sub.createdAt).toISOString().split('T')[0]  // Ensure it's a Date
-  const count = sub.problem._count.submissions || 1  // fallback if not present
-  return { date, count }
-})
 
-const merged = raw?.reduce((acc: Record<string, number>, curr) => {
-  if (!curr?.date) return acc
-  acc[curr.date] = (acc[curr.date] || 0) + curr.count
-  return acc
-}, {})
+const dailyCounts = user?.submissions.reduce((acc: Record<string, number>, sub) => {
+  const date = sub.createdAt.toISOString().split('T')[0] as string;
+  acc[date] = (acc[date ] || 0) + 1;
+  return acc;
+}, {});
 
-// Convert object to array format required by the heatmap
-const values = Object.entries(merged!).map(([date, count]) => ({ date, count }))
+const values = Object.entries(dailyCounts as Record<string, number>).map(([date, count]) => ({ date, count }));
 
-console.log("Heatmap values", values)
+
 
 
 

@@ -32,6 +32,9 @@ const PlayLists = () => {
     <div className="max-w-6xl mx-auto p-4">
       <h1 className="text-4xl font-bold text-center mb-8">PlayLists</h1>
       <div className="grid  gap-8">
+        {
+            data?.length === 0 && <h1 className="text-2xl font-bold text-center mb-8">No PlayLists Found</h1>
+        }
         {data?.map((playlist: any) => (
           <div
             key={playlist.id}

@@ -5,11 +5,11 @@ import { createProblem, deleteProblemById, getAllProblems, getProblemById, getUs
 
 const router = express.Router()
 
-router.get('/get-all-problems',  userAuth,adminAuth, getAllProblems)
+router.get('/get-all-problems',  userAuth, getAllProblems)
 
 router.post('/create-problem', adminAuth, createProblem)
 
-router.get('/get-problem/:id', userAuth,adminAuth, getProblemById)
+router.get('/get-problem/:id', userAuth, getProblemById)
 
 router.put('/update-problem/:id', adminAuth, updateProblemById)
 
