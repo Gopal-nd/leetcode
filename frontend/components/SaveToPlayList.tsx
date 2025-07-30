@@ -54,8 +54,8 @@ export default function SaveToPlayListModel({id}:{id:string}) {
             toast.success(data.message)
             setOpen(!open)
         },
-        onError: () => {
-            toast.error('Error creating playlist')
+        onError: (data) => {
+            toast.error(data.message||'Error creating playlist')
         }
     })
 

@@ -23,8 +23,8 @@ const Solutions: React.FC<SolutionsProps> = ({ problem }) => {
         <p>{currentLang}</p>
       </div>
       <div>
-        <pre className="whitespace-pre-wrap break-words p-4 border bg-gray-800 m-2">
-          {problem.referenceSolutions?.[currentLang] || 'No solution available.'}
+        <pre className="text-lg break-words p-4 border max-h-32 bg-gray-800 m-2">
+          <div className='' dangerouslySetInnerHTML={{ __html: problem.referenceSolutions?.[currentLang] }} />
         </pre>
       </div>
     </div>

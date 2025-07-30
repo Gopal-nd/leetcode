@@ -15,6 +15,6 @@ router.post('/:id/add-problem', userAuth, addProblemToPlaylist)
 
 router.delete('/:id', userAuth, deletePlaylistById)
 
-router.delete('/:id/remove-problem', userAuth, removeProblemFromPlaylist)
+router.post('/:id/remove-problem', userAuth, removeProblemFromPlaylist)
 
 export default router
