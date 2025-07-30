@@ -15,6 +15,9 @@ export const getAllSubmissions = asyncHandler(async (req, res) => {
         const submissions = await prisma.submission.findMany({
             where: {
                 userId: req.user.id
+            },
+            include:{
+                testCases: true
             }
         })
 

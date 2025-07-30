@@ -9,6 +9,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { useSession } from '@/lib/auth-client'
 import Logout from '@/components/Logout'
 import Heatmap from '@/components/user/CalanderHeatMap'
+import SubmissionsHistory from '@/components/user/SubmissionsHistory'
 
 
 const Spinner: React.FC = () => (
@@ -105,6 +106,8 @@ const ProfilePage: React.FC = () => {
       </Card>
     </div>
     <Heatmap />
+    <SubmissionsHistory />
+    
           </>
   )
 }

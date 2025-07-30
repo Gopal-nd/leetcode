@@ -5,7 +5,7 @@ import type { Request, Response, NextFunction } from "express";
 
 import problemsRoute from './routes/problems.router'
 import executeCodeRoute from './routes/execute-code.router'
-import submissionsRoute from './routes/execute-code.router'
+import submissionsRoute from './routes/submissions.router'
 import playlistsRoute from './routes/playlist.router'
 import heatmapRoute from './routes/heatmap.router'
 
@@ -15,7 +15,6 @@ import heatmapRoute from './routes/heatmap.router'
 
 import { auth } from "../auth";
 import errorHandler from './middleware/error.middleware';
-import {  userAuth } from './middleware/auth.middleware';
 
 const app = express()
 const port = process.env.PORT!
