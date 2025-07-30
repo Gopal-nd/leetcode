@@ -26,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import PlaylistModel from "@/components/PlayListModel";
 import { Bookmark, Save, SaveIcon } from "lucide-react";
+import SaveToPlayListModel from "@/components/SaveToPlayList";
 
 type Problem = {
   id: string;
@@ -100,9 +101,8 @@ const columns: ColumnDef<Problem>[] = [
     header: "Save to Playlist",
     cell: (info) => (
       
-        <Button variant={'outline'} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          <Bookmark />Save To Playlist
-        </Button>
+          <SaveToPlayListModel id={info.row.original.id} />
+        
       
     ),
   },

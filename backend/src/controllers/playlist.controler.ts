@@ -24,20 +24,13 @@ export const createPlaylist = asyncHandler(async (req, res) => {
 })
 
 export const getAllPlaylists  = asyncHandler(async (req, res) => {
-       const {name, description} = req.body
+   
 
     if(!req.user) throw new APIError({status: 400, message: "User not found"})
 
     const playlist = await prisma.playlist.findMany({
         where: {
             userId: req.user.id
-        },
-        include: {
-           problemInPlaylist: {
-            select:{
-                problem:true
-            }
-           }
         }
     })
 
@@ -61,11 +54,13 @@ export const getPlaylsitById = asyncHandler(async (req, res) => {
         include: {
            problemInPlaylist: {
             select:{
-                problem:true
+                problem:true,
+                id: true
             }
            }
         }
     })
+    
 
     if(!playlist) throw new APIError({status: 400, message: "Playlist not found"})
 
@@ -85,6 +80,7 @@ export const addProblemToPlaylist = asyncHandler(async (req, res) => {
 
     if(!req.user) throw new APIError({status: 400, message: "User not found"})
 
+        console.log(problemId)
     if(!Array.isArray(problemId)|| problemId.length === 0) throw new APIError({status: 400, message: "ProblemId must be an array"})
 
     const playlist = await prisma.problemsInPlaylist.createMany({

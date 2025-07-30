@@ -45,10 +45,12 @@ export default function PlaylistModel() {
     })
 
   return (
-    <Dialog  >
+   <Dialog open={open} onOpenChange={setOpen}>
       <form>
         <DialogTrigger asChild>
-          <Button variant="outline" onClick={() => setOpen(!open)}><Plus /> PlayList</Button>
+           <Button variant="outline" onClick={() => setOpen(true)}>
+                        <Plus /> PlayList
+                    </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -66,11 +68,9 @@ export default function PlaylistModel() {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-                <>
               <Button variant="outline">Cancel</Button>
-                </>
-            <Button type="submit" onClick={(e) => {e.preventDefault(); mutate()}} disabled={isPending}>Save changes</Button>
             </DialogClose>
+            <Button type="submit" onClick={(e) => {e.preventDefault(); mutate()}} disabled={isPending}>Save changes</Button>
           </DialogFooter>
         </DialogContent>
       </form>
