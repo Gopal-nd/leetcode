@@ -60,7 +60,7 @@ const ProblemPage = () => {
           <TabsTrigger value="description">Description</TabsTrigger>
           <TabsTrigger value="submissions">Submission</TabsTrigger>
           <TabsTrigger value="solutions">Solutions</TabsTrigger>
-          <TabsTrigger value="hints">Hints</TabsTrigger>
+          <TabsTrigger value="hints">AI Hints</TabsTrigger>
 
         </TabsList>
         <TabsContent value="description">

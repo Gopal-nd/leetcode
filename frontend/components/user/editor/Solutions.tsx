@@ -1,5 +1,6 @@
 import { useProblemLanguageStore } from '@/store/useProblemsStore';
 import { Problem } from '@/types/Problem';
+import { Editor } from '@monaco-editor/react';
 import React from 'react';
 
 type ReferenceSolutions = {
@@ -23,9 +24,31 @@ const Solutions: React.FC<SolutionsProps> = ({ problem }) => {
         <p>{currentLang}</p>
       </div>
       <div>
-        <pre className="text-lg break-words p-4 border max-h-32 bg-gray-800 m-2">
-          <div className='' dangerouslySetInnerHTML={{ __html: problem.referenceSolutions?.[currentLang] }} />
-        </pre>
+        <div className="">
+          <Editor
+          defaultValue={problem.referenceSolutions?.[currentLang]} 
+          value={problem.referenceSolutions?.[currentLang]}
+          language={currentLang}
+          height={"60vh"}
+          theme='vs-dark'
+           options={{
+              minimap: { enabled: false },
+              fontSize: 13,
+              lineNumbers: "on",
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              readOnly: false,
+              automaticLayout: true,
+              mouseWheelScrollSensitivity: 1,
+              wordWrap: "on",
+              scrollbar: {
+                alwaysConsumeMouseWheel: false,
+                handleMouseWheel: true,
+              },
+            }}
+          />
+        
+        </div>
       </div>
     </div>
   );
