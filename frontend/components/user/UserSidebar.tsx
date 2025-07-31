@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Play, UserRound,  } from "lucide-react"
+import { Bookmark, Calendar, Code, Home, Inbox, Play, UserRound, Users,  } from "lucide-react"
 
 import {
   Sidebar,
@@ -21,7 +21,7 @@ const items = [
   {
     title: "PlayList",
     url: "/dashboard/playlist",
-    icon: Play,
+    icon: Bookmark,
   },
    {
     title: "Profile",
@@ -31,8 +31,9 @@ const items = [
      {
     title: "Collab",
     url: "/dashboard/collab",
-    icon: Inbox,
+    icon: Users ,
   },
+
  
 ]
 

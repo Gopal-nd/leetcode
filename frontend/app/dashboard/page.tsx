@@ -27,6 +27,10 @@ import { Button } from "@/components/ui/button";
 import PlaylistModel from "@/components/PlayListModel";
 import { Bookmark, Save, SaveIcon } from "lucide-react";
 import SaveToPlayListModel from "@/components/SaveToPlayList";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
+import { toast } from "sonner";
+import Spinner from "@/components/Spinner";
 
 type Problem = {
   id: string;
@@ -34,110 +38,48 @@ type Problem = {
   description: string;
   difficulty: string;
   tags: string[];
-problemSolved: {
-  userId: string;
-  problemId: string;
+  problemSolved: {
+    userId: string;
+    problemId: string;
+  };
 };
-};
-
-const columnHelper = createColumnHelper<Problem>();
-
 
 
 const Admin = () => {
-const {data:session} = useSession();
-const columns: ColumnDef<Problem>[] = [
-  {
-    header: "Solved",
-    accessorKey: "problemSolved",
-    cell: (info) => {
-      const row = info.row.original as any
-      const ref = row.problemSolved[0]?.problemId.includes(row.id) && row.problemSolved[0]?.userId ===session?.user.id
-      return ref ? (
-        <Checkbox checked disabled/>
-      ) : (
-        <Checkbox  disabled/>
-      )
-    },
-  },
-  { 
-    accessorKey: "title",
-    header: "Title",
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "difficulty",
-    header: "Difficulty",
-    cell: (info) => (
-      <span
-        className={`px-2 py-1 rounded-full text-xs ${
-          info.getValue() === "EASY"
-            ? "bg-green-100 text-green-800"
-            : info.getValue() === "MEDIUM"
-            ? "bg-yellow-100 text-yellow-800"
-            : "bg-red-100 text-red-800"
-        }`}
-      >
-        {info.getValue() as string}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "tags",
-    header: "Tags",
-    cell: (info) => {
-      const row = info.row.original;
-      return row.tags.map((tag) => (
-        <span
-          key={tag}
-          className="inline-block text-xs bg-muted px-2 py-1 rounded mr-1"
-        >
-          {tag}
-        </span>
-      ));
-    },
-  },
-    { 
-    header: "Save to Playlist",
-    cell: (info) => (
+
+  const { data: session } = useSession();
+
+ 
+  // const { getAllProblems, isProblemsLoading, problems } = useProblemsStore();
+  const { data:problems,isPending,error} = useQuery<Problem[]>({
+    queryKey: ["problems"],
+    queryFn: async () => {
+      try {
+        const res = await axiosInstance.get('/problems/get-all-problems');
+        const data = res.data;
+
+        toast.success(data.message);
+        return data.data
+      } catch (error) {
+        toast.error("Something went wrong in Fetching");
+        console.error(error);
+      } 
       
-          <SaveToPlayListModel id={info.row.original.id} />
-        
-      
-    ),
-  },
-  {
-    header: "Actions",
-    cell: (info) => (
-      <Link href={`/dashboard/${info.row.original.id}`}>
-        <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Solve
-        </Button>
-      </Link>
-    ),
-  }
-];
-  const {
-    getAllProblems,
-    isProblemsLoading,
-    problems,
-  } = useProblemsStore();
-  console.log(problems);
+    }})
+
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
 
-  useEffect(() => {
-    getAllProblems();
-  }, []);
 
   const difficulties = useMemo(
-    () => Array.from(new Set(problems.map((p) => p.difficulty))).sort(),
+    () => Array.from(new Set((problems ?? []).map((p) => p.difficulty))).sort(),
     [problems]
   );
 
   const tags = useMemo(
-    () => Array.from(new Set(problems.flatMap((p) => p.tags))).sort(),
+    () => Array.from(new Set((problems ?? []).flatMap((p) => p.tags))).sort(),
     [problems]
   );
 
@@ -150,7 +92,7 @@ const columns: ColumnDef<Problem>[] = [
   );
 
   const filteredProblems = useMemo(() => {
-    return problems.filter((problem) => {
+    return (problems ?? []).filter((problem) => {
       const matchesDifficulty =
         selectedDifficulty === "" || problem.difficulty === selectedDifficulty;
       const matchesTag =
@@ -162,6 +104,71 @@ const columns: ColumnDef<Problem>[] = [
       return matchesDifficulty && matchesTag && matchesSearch;
     });
   }, [problems, selectedDifficulty, selectedTag, globalFilter]);
+
+   const columns: ColumnDef<Problem>[] = [
+    {
+      header: "Solved",
+      accessorKey: "problemSolved",
+      cell: (info) => {
+        const row = info.row.original as any;
+        const ref =
+          row.problemSolved[0]?.problemId.includes(row.id) &&
+          row.problemSolved[0]?.userId === session?.user.id;
+        return ref ? <Checkbox checked disabled /> : <Checkbox disabled />;
+      },
+    },
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "difficulty",
+      header: "Difficulty",
+      cell: (info) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs ${
+            info.getValue() === "EASY"
+              ? "bg-green-100 text-green-800"
+              : info.getValue() === "MEDIUM"
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {info.getValue() as string}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "tags",
+      header: "Tags",
+      cell: (info) => {
+        const row = info.row.original;
+        return row.tags.map((tag) => (
+          <span
+            key={tag}
+            className="inline-block text-xs bg-muted px-2 py-1 rounded mr-1"
+          >
+            {tag}
+          </span>
+        ));
+      },
+    },
+    {
+      header: "Save to Playlist",
+      cell: (info) => <SaveToPlayListModel id={info.row.original.id} />,
+    },
+    {
+      header: "Actions",
+      cell: (info) => (
+        <Link href={`/dashboard/${info.row.original.id}`}>
+          <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Solve
+          </Button>
+        </Link>
+      ),
+    },
+  ];
 
   const table = useReactTable({
     data: filteredProblems as any,
@@ -176,21 +183,21 @@ const columns: ColumnDef<Problem>[] = [
   });
 
   return (
-    <div className="p-6 max-w-full">
-      <h1 className="text-xl font-semibold mb-4">Problems </h1>
+    <>
+    {isPending && <Spinner />}
 
-      {isProblemsLoading && <p className="text-gray-500">Loading problems...</p>}
+    {!isPending && <div className="p-6 max-w-full">
+      <h1 className="text-2xl font-bold mb-4 bg-gradient-to-b from-white via-gray-100 to-gray-300  bg-clip-text text-transparent w-full "> Poblems</h1>
+
       <div className="flex justify-between items-center">
-
-      <Input
-        placeholder="Search problems..."
-        onChange={(e) => handleSearch(e.target.value)}
-        className="mb-4 w-full max-w-md"
+        <Input
+          placeholder="Search problems..."
+          onChange={(e) => handleSearch(e.target.value)}
+          className="mb-4 w-full max-w-md"
         />
 
-      
         <PlaylistModel />
-        </div>
+      </div>
 
       <div className="flex gap-4 mb-4 flex-wrap">
         <Select
@@ -236,7 +243,7 @@ const columns: ColumnDef<Problem>[] = [
         </Button>
       </div>
 
-      <div className="overflow-auto rounded-md border">
+     <div className="overflow-auto rounded-md border">
         <table className="min-w-full text-sm text-left">
           <thead className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -273,8 +280,9 @@ const columns: ColumnDef<Problem>[] = [
           </tbody>
         </table>
       </div>
-        <div className="flex items-center justify-between mt-4">
-        {/* Previous / Next */}
+
+      <div className="flex items-center justify-between mt-4">
+    
         <div className="flex gap-2">
           <button
             className="px-3 py-1 bg-muted rounded disabled:opacity-50"
@@ -292,13 +300,13 @@ const columns: ColumnDef<Problem>[] = [
           </button>
         </div>
 
-        {/* Page info */}
+
         <span className="text-sm">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
         </span>
 
-        {/* Page size selector */}
+        
         <select
           className="px-2 py-1 text-sm bg-muted rounded"
           value={table.getState().pagination.pageSize}
@@ -313,7 +321,9 @@ const columns: ColumnDef<Problem>[] = [
           ))}
         </select>
       </div>
-    </div>
+    </div>}
+    </>
+        
   );
 };
 

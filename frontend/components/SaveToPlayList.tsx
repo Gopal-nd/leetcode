@@ -33,9 +33,9 @@ export default function SaveToPlayListModel({id}:{id:string}) {
             return res.data.data
         }
     })
-    console.log(data)
-    console.log("Id", id)
-    console.log("PlayListId", problemId)
+    // console.log(data)
+    // console.log("Id", id)
+    // console.log("PlayListId", problemId)
 
 
     const [open, setOpen] = useState(false)

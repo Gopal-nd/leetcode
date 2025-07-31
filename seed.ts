@@ -1640,7 +1640,7 @@ const problems = [
     }
   }
 ]
-console.log(problems[1])
+// console.log(problems[1])
 
 async function seed(data:any) {
 
@@ -1651,7 +1651,7 @@ async function seed(data:any) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Cookie": "ext_name=ojplmecpdpgccookcobabopnaifgidhf; better-auth.session_token=1L9xwJbJrZLqBqoCYZ71jWu0fqHj6O69.P5ikSjZp%2FZVl%2Byfa3ymAf7Oig2iT33dKI120qT5bOQk%3D"
+            "Cookie": "ext_name=2jMRVnghd0sMRxZDu4GSGCNZAT98cZaD; better-auth.session_token=2jMRVnghd0sMRxZDu4GSGCNZAT98cZaD.Elv5HoZmLstvlwSuN%2Bnk3KtG2OcInz%2BfpemPRt7PM74%3D"
             
           },
           body: JSON.stringify(data),
@@ -1669,5 +1669,18 @@ return resJson
   
   
 }
+async function InsertAllProblems(problems: any[]) {
+  for (const problem of problems) {
+    const res = await seed(problem);
+    if (res?.title) {
+      console.log("✅ Created:", res.title);
+    } else {
+      console.log("⚠️ Problem creation failed or returned no title:", problem.title);
+    }
+  }
+}
 
-seed(problems[1]).then(r => console.log(r)).catch(e => console.log(e))
+// Call it with your problems array
+InsertAllProblems(problems)
+  .then(() => console.log("✅ All problems inserted"))
+  .catch((err) => console.error("❌ InsertAllProblems error:", err));

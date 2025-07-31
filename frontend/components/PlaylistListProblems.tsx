@@ -51,7 +51,6 @@ const PlayListProblems = ({
   problems: Problem[];
   mutate: (data: string) => void;
 }) => {
- 
   const columns: ColumnDef<Problem>[] = [
     {
       accessorKey: "title",
@@ -113,10 +112,8 @@ const PlayListProblems = ({
     },
   ];
 
-  const { data: session, isPending } = useSession();
+  // const { data: session, isPending } = useSession();
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("");
-  const [selectedTag, setSelectedTag] = useState("");
 
   const difficulties = useMemo(
     () => Array.from(new Set(problems.map((p) => p.difficulty))).sort(),
@@ -138,17 +135,13 @@ const PlayListProblems = ({
 
   const filteredProblems = useMemo(() => {
     return problems.filter((problem) => {
-      const matchesDifficulty =
-        selectedDifficulty === "" || problem.difficulty === selectedDifficulty;
-      const matchesTag =
-        selectedTag === "" || problem.tags.includes(selectedTag);
       const matchesSearch =
         globalFilter === "" ||
         problem.title.toLowerCase().includes(globalFilter.toLowerCase()) ||
         problem.description.toLowerCase().includes(globalFilter.toLowerCase());
-      return matchesDifficulty && matchesTag && matchesSearch;
+      return matchesSearch;
     });
-  }, [problems, selectedDifficulty, selectedTag, globalFilter]);
+  }, [problems, globalFilter]);
 
   const table = useReactTable({
     data: filteredProblems as any,
@@ -177,51 +170,6 @@ const PlayListProblems = ({
         <Link href={`/dashboard`}>
           <Button>Add Problem</Button>
         </Link>
-      </div>
-
-      <div className="flex gap-4 mb-4 flex-wrap">
-        <Select
-          value={selectedDifficulty}
-          onValueChange={(e) => setSelectedDifficulty(e)}
-          
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Difficulties" />
-          </SelectTrigger>
-          <SelectContent>
-            {/* <SelectItem value="">All Difficulties</SelectItem> */}
-            {difficulties.map((difficulty) => (
-              <SelectItem key={difficulty} value={difficulty}>
-                {difficulty}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select value={selectedTag} onValueChange={(e) => setSelectedTag(e)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Tags" />
-          </SelectTrigger>
-          <SelectContent>
-            {/* <SelectItem value="">All Tags</SelectItem> */}
-            {tags.map((t) => (
-              <SelectItem key={t} value={t}>
-                {t}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Button
-          variant="outline"
-          onClick={() => {
-            setSelectedDifficulty("");
-            setSelectedTag("");
-            setGlobalFilter("");
-          }}
-        >
-          clear
-        </Button>
       </div>
 
       <div className="overflow-auto rounded-md border">

@@ -1,6 +1,6 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react'
-import * as Y from 'yjs'
+import *  as Y from 'yjs'
 import { MonacoBinding } from 'y-monaco'
 import { Awareness } from 'y-protocols/awareness'
 import Editor, { OnMount } from '@monaco-editor/react'
@@ -8,20 +8,18 @@ import { io, Socket } from 'socket.io-client'
 import { Users, Wifi, WifiOff, Copy } from 'lucide-react'
 
 const SOCKET_URL = 'http://localhost:8000'
+import dynamic from 'next/dynamic'
 
 // Get room from URL or use default
 const getRoomName = () => {
-  if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search)
-    return urlParams.get('room') || 'default-room'
-  }
+  
   return 'default-room'
 }
 
 export default function CollaborativeEditor() {
   const [connectionStatus, setConnectionStatus] = useState('connecting')
   const [userCount, setUserCount] = useState(1)
-  const [roomName] = useState(getRoomName()) // get the username
+  const [roomName] = useState() // get the username
   
   // Refs for Yjs and Socket
   const ydocRef = useRef<Y.Doc | null>(null)

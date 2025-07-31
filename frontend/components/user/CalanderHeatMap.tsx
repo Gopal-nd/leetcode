@@ -5,11 +5,12 @@ import 'react-calendar-heatmap/dist/styles.css'
 import { subDays } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from '@/lib/axios'
+import Spinner from '../Spinner'
 
 export default function Heatmap() {
   const today = new Date(Date.now())
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading} = useQuery({
     queryKey: ['heatmap'],
     queryFn: async () => {
       const response = await axiosInstance.get('/heatmap')
@@ -17,11 +18,11 @@ export default function Heatmap() {
     },
   })
 
-  if (isLoading) return <div>Loading...</div>
 
   return (
     <div className="p-4 m-5">
       <h1 className="text-xl font-bold mb-4">Submission Heatmap</h1>
+    {    isLoading ? <Spinner /> :
       <CalendarHeatmap
         startDate={subDays(today, 365)}
         endDate={today}
@@ -38,7 +39,7 @@ export default function Heatmap() {
           return `${value.date}: ${value.count} submission(s)`
         }}
         showWeekdayLabels
-      />
+      />}
     </div>
   )
 }

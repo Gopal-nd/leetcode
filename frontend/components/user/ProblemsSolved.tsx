@@ -1,49 +1,52 @@
-
-import { axiosInstance } from '@/lib/axios'
-import { useQuery } from '@tanstack/react-query'
-import React from 'react'
-// 
+import { axiosInstance } from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
+import Spinner from "../Spinner";
+//
 const ProblemsSolved = () => {
-    const {data, isLoading,error} = useQuery({
-        queryKey: ['user-stats'],
-        queryFn: async () => {
-            const res = await axiosInstance.get(`/problems/user-stats`)
-            return res.data.data
-        }
-    })
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["user-stats"],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/problems/user-stats`);
+      return res.data.data;
+    },
+  });
 
-    console.log(data)
-    if(isLoading) return <div>Loading...</div>
-    if(error) return <div>Error</div>
-    console.log(data)
   return (
-    <div className='flex border rounded-2xl p-4 flex-col w-full gap-2'>
-        <h1 className='text-2xl font-bold'>Problems Solved</h1>
-        <div className='flex flex-col gap-2 items-center m-2'>
-            {
-                <CircularProgress  count={data.count} total={data.total}/>
-            }
+    <div className="flex border rounded-2xl p-4 flex-col w-full gap-2">
+      <h1 className="text-2xl font-bold">Problems Solved</h1>
+      {isLoading ? <Spinner /> : <>
+      <div className="flex flex-col gap-2 items-center m-2">
+        {<CircularProgress count={data.count} total={data.total} />}
+      </div>
+      {data && (
+        <div className="flex gap-2 items-center justify-evenly">
+          <p className="font-bold text-green-500 border p-4 rounded-2xl">
+            {data?.difficultyCount["EASY"] ? data.difficultyCount.EASY : 0} EASY
+          </p>
+          <p className="font-bold text-yellow-500 border p-4 rounded-2xl">
+            {data?.difficultyCount["MEDIUM"] ? data.difficultyCount.MEDIUM : 0}{" "}
+            MEDIUM
+          </p>
+          <p className="font-bold text-red-500 border p-4 rounded-2xl">
+            {data?.difficultyCount["HARD"] ? data.difficultyCount.HARD : 0} HARD
+          </p>
         </div>
-       {data && <div className='flex gap-2 items-center justify-evenly'>
-            <p className='font-bold text-green-500 border p-4 rounded-2xl'>
-                {data?.difficultyCount["EASY"] ? data.difficultyCount.EASY : 0} EASY
-            </p>
-             <p className='font-bold text-yellow-500 border p-4 rounded-2xl'>
-                {data?.difficultyCount["MEDIUM"] ? data.difficultyCount.MEDIUM : 0} MEDIUM
-            </p>
-             <p className='font-bold text-red-500 border p-4 rounded-2xl'>
-                {data?.difficultyCount["HARD"]? data.difficultyCount.HARD : 0} HARD
-            </p>
-        </div>}
+      )}
+      </>}
     </div>
-  )
-}
+  );
+};
 
-export default ProblemsSolved
+export default ProblemsSolved;
 
-
-
-const CircularProgress = ({ count, total }: { count: number; total: number }) => {
+const CircularProgress = ({
+  count,
+  total,
+}: {
+  count: number;
+  total: number;
+}) => {
   const percentage = total === 0 ? 0 : Math.round((count / total) * 100);
 
   return (
@@ -72,8 +75,9 @@ const CircularProgress = ({ count, total }: { count: number; total: number }) =>
       <p className="text-sm text-gray-300">Problems Completed</p>
 
       {/* Remaining */}
-      <p className="text-sm text-gray-500 mt-1">{total - count} problems remaining</p>
+      <p className="text-sm text-gray-500 mt-1">
+        {total - count} problems remaining
+      </p>
     </div>
   );
 };
-
