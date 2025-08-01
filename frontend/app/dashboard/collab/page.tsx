@@ -6,7 +6,7 @@ import { MonacoBinding } from 'y-monaco'
 import { Awareness } from 'y-protocols/awareness'
 import Editor from '@monaco-editor/react'
 import { io, Socket } from 'socket.io-client'
-import { Users, Wifi, WifiOff, Copy } from 'lucide-react'
+import { Users, Wifi, WifiOff, Copy, Info, Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import {
   ResizableHandle,
@@ -14,6 +14,11 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 import { Button } from '@/components/ui/button'
+import { useMutation } from '@tanstack/react-query'
+import { executeCode } from '@/lib/api'
+import TooltipHelper from '@/components/ToolTip'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
 
 const SOCKET_URL = 'http://localhost:8000'
 
@@ -26,6 +31,10 @@ export default function CollaborativeEditor() {
   const [connectionStatus, setConnectionStatus] = useState('connecting')
   const [userCount, setUserCount] = useState(1)
   const [roomName] = useState(getRoomName)
+  const [code , setCode] = useState('')
+  const [stdin, setStdin] = useState("");
+  
+
 
   // Refs
   const ydocRef = useRef<Y.Doc | null>(null)
@@ -113,6 +122,39 @@ export default function CollaborativeEditor() {
     }
   }, [])
 
+  const {
+    mutate: runCode,
+    data: output,
+    isPending,
+    isError,
+    error,
+  } = useMutation<any>({
+    mutationFn: async () => {
+      const sourcecode = editorRef.current.getValue();
+      const res = await executeCode( 'javascript', sourcecode, stdin);
+      return res.run;
+    },
+    onSuccess: (data) => {
+      const signals = data?.signal;
+      console.log("signals", signals);
+      signals
+        ? toast("Request timeout or resource exhaustion", {
+            style: {
+              border: "1px solid red",
+              padding: "16px",
+              color: "red",
+            },
+          })
+        : toast.success("Code executed successfully");
+    },
+    onError: () => {
+      toast.error("Error executing code");
+    },
+  });
+
+  const stdout = output?.stdout.split("\n");
+  const stderr = output?.stderr;
+
   return (
     <div className="h-screen w-full flex flex-col bg-background text-foreground">
       {/* Header */}
@@ -127,6 +169,16 @@ export default function CollaborativeEditor() {
             )}
             <span className="text-muted-foreground">Room: {roomName}</span>
           </div>
+        </div>
+        <div>
+           <Button disabled={isPending} onClick={() => runCode()}>
+            {isPending && (
+              <p>
+                <Loader2 className="h-4 w-4 animate-spin " />
+              </p>
+            )}
+            Run Code
+          </Button>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -153,7 +205,7 @@ export default function CollaborativeEditor() {
             <Editor
               height="100%"
               defaultLanguage="javascript"
-              defaultValue={`// Welcome to the collaborative editor!\nfunction hello() {\n  console.log("Hello World")\n}\nhello();`}
+              defaultValue={`// Welcome to the collaborative editor!\n\n function hello() {\n  console.log("Hello World")\n}\nhello();`}
               theme="vs-dark"
               onMount={onMount}
               options={{
@@ -167,14 +219,55 @@ export default function CollaborativeEditor() {
 
           <ResizableHandle />
 
+   
           <ResizablePanel>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={75}>
-                <div className="p-4 h-full text-sm">Output panel</div>
+                <div className="w-full p-2">
+                  <h1 className="text-2xl font-bold mb-4 border-b text-center p-1">
+                    Output
+                  </h1>
+
+                  {stderr ? (
+                    <div className="bg-black text-red-400 p-3 rounded font-mono text-sm whitespace-pre-wrap">
+                      <strong>Error:</strong>
+                      <pre>{stderr}</pre>
+                    </div>
+                  ) : stdout && stdout.join("").trim() !== "" ? (
+                    <div className="bg-black text-green-400 p-3 rounded font-mono text-sm whitespace-pre-wrap">
+                      <pre>{stdout.join("\n")}</pre>
+                    </div>
+                  ) : (
+                    <p className="text-green-300">
+                      // Click "Run Code" to see the output here
+                    </p>
+                  )}
+
+                  {isError && (
+                    <div className="text-red-500 text-xs mt-2 font-mono">
+                      {JSON.stringify(error)}
+                    </div>
+                  )}
+                </div>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={25}>
-                <div className="p-4 h-full  text-sm">Input panel</div>
+                <div className="p-4 h-full">
+                  <h2 className="text-xl font-semibold mb-2 flex items-center justify-start gap-2">
+                      Input
+                    <TooltipHelper message="Give the inputs Before running the code">
+                      
+                       <Info />
+
+                    </TooltipHelper>
+                  </h2>
+                  <Textarea
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                    placeholder="Type input here like terminal..."
+                    className="w-full h-full p-2 text-sm font-mono  rounded resize-none"
+                  />
+                </div>
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
