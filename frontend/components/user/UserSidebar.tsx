@@ -1,4 +1,4 @@
-import { Bookmark, Calendar, Code, Home, Inbox, Play, UserRound, Users,  } from "lucide-react"
+import { Bookmark, Calendar, Code, Code2, Home, Inbox, Play, UserRound, Users,  } from "lucide-react"
 
 import {
   Sidebar,
@@ -33,7 +33,11 @@ const items = [
     url: "/dashboard/collab",
     icon: Users ,
   },
-
+     {
+    title: "Editor",
+    url: "/editor",
+    icon: Code2 ,
+  },
  
 ]
 
