@@ -1,11 +1,14 @@
 import axios from "axios";
-import { LANGUAGE_VERSIONS } from "./constants";
+import { LANGUAGE_VERSIONS } from "@/constants/page";
 
 const API = axios.create({
   baseURL: "https://emkc.org/api/v2/piston",
 });
 
-export const executeCode = async (language:string, sourceCode:string) => {
+export const executeCode = async (
+  language: keyof typeof LANGUAGE_VERSIONS,
+  sourceCode: string
+) => {
   const response = await API.post("/execute", {
     language: language,
     version: LANGUAGE_VERSIONS[language],
