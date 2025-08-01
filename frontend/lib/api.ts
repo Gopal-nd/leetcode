@@ -7,7 +7,8 @@ const API = axios.create({
 
 export const executeCode = async (
   language: keyof typeof LANGUAGE_VERSIONS,
-  sourceCode: string
+  sourceCode: string,
+  stdin?: any
 ) => {
   const response = await API.post("/execute", {
     language: language,
@@ -17,6 +18,7 @@ export const executeCode = async (
         content: sourceCode,
       },
     ],
+    stdin: stdin,
   });
   return response.data;
 };

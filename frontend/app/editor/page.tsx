@@ -22,12 +22,14 @@ import { Button } from "@/components/ui/button";
 import { executeCode } from "@/lib/api";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import TooltipHelper from "@/components/ToolTip";
 
 export default function CollaborativeCodeEditor() {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
-
+  const [stdin, setStdin] = useState("");
   const [code, setCode] = useState(
     () => defaultSnippets.find((s) => s.name === "javascript")?.code || ""
   );
@@ -44,11 +46,21 @@ export default function CollaborativeCodeEditor() {
   } = useMutation<any>({
     mutationFn: async () => {
       const sourcecode = editorRef.current.getValue();
-      const res = await executeCode(selectedLanguage as any, sourcecode);
+      const res = await executeCode(selectedLanguage as any, sourcecode, stdin);
       return res.run;
     },
     onSuccess: (data) => {
-      toast.success("Code executed successfully");
+      const signals = data?.signal;
+      console.log("signals", signals);
+      signals
+        ? toast("Request timeout or resource exhaustion", {
+            style: {
+              border: "1px solid red",
+              padding: "16px",
+              color: "red",
+            },
+          })
+        : toast.success("Code executed successfully");
     },
     onError: () => {
       toast.error("Error executing code");
@@ -57,6 +69,7 @@ export default function CollaborativeCodeEditor() {
 
   const stdout = output?.stdout.split("\n");
   const stderr = output?.stderr;
+  const signals = output?.signals;
 
   console.log("output", output);
 
@@ -211,7 +224,22 @@ export default function CollaborativeCodeEditor() {
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel defaultSize={25}>
-                <div className="p-4 h-full  text-sm">Input panel</div>
+                <div className="p-4 h-full">
+                  <h2 className="text-xl font-semibold mb-2 flex items-center justify-start gap-2">
+                      Input
+                    <TooltipHelper message="Give the inputs Before running the code">
+                      
+                       <Info />
+
+                    </TooltipHelper>
+                  </h2>
+                  <Textarea
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                    placeholder="Type input here like terminal..."
+                    className="w-full h-full p-2 text-sm font-mono  rounded resize-none"
+                  />
+                </div>
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
