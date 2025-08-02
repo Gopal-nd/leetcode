@@ -105,13 +105,11 @@ export default function CollaborativeEditor() {
     })
   }
 
-  const copyShareLink = () => {
-    if (typeof window !== 'undefined') {
-      const shareUrl = `${window.location.origin}${window.location.pathname}?room=${roomName}`
-      navigator.clipboard.writeText(shareUrl)
-      alert('Share link copied to clipboard!')
-    }
-  }
+const copyShareLink = () => {
+  // navigator.clipboard.writeText(window.location.href).then(() => {
+  //   toast.success('Share link copied to clipboard')
+  // })
+}
 
   useEffect(() => {
     return () => {

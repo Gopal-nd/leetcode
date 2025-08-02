@@ -1,5 +1,4 @@
 'use client'
-import React, { Suspense } from 'react'
 
 
 import Heatmap from '@/components/user/CalanderHeatMap'
@@ -8,11 +7,6 @@ import ProblemsSolved from '@/components/user/ProblemsSolved'
 import UserCard from '@/components/user/UserCard'
 
 
-export const Spinner: React.FC = () => (
-    <div className="flex justify-center">
-      <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
 
 const ProfilePage: React.FC = () => {
 
@@ -24,10 +18,9 @@ const ProfilePage: React.FC = () => {
      
     </div>
     <ProblemsSolved />
-    <Suspense fallback={<Spinner />}>
+    
     <Heatmap />
     <SubmissionsHistory />
-    </Suspense>
 
     
           </>
