@@ -4,7 +4,7 @@
   "buildCommand": "bun prisma generate",
   "outputDirectory": ".",
   "functions": {
-    "src/index.js": {
+    "src/index.ts": {
       "runtime": "nodejs18.x",
       "maxDuration": 10
     }
@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/src/index.js"
+      "dest": "/src/index.ts"
     }
   ]
 }
