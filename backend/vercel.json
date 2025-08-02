@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "installCommand": "bun install",
+  "buildCommand": "bun prisma generate",
+  "outputDirectory": ".",
+  "functions": {
+    "src/index.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/src/index.js"
+    }
+  ]
+}

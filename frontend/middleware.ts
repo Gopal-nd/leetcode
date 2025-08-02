@@ -1,47 +1,46 @@
-import { Session } from 'better-auth';
-import { betterFetch } from '@better-fetch/fetch';
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function middleware(request: NextRequest){
-    const token = request.cookies.get("better-auth.session_token")?.value
 
-    const origin = request.nextUrl.origin;
-    const base = process.env.NEXT_PUBLIC_BACKEND_URL! || origin;
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("better-auth.session_token")?.value;
+  const origin = req.nextUrl.origin;
+  const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL ?? origin;
+  const sessionUrl = `${apiBase.replace(/\/$/, "")}/api/me`;
 
-    const sessionUrl = `${base.replace(/\/$/, "")}/api/me`;
-    let session: any | null = null;
-    
-
+  let session: { user?: { role?: string } } | null = null;
+  if (token) {
     try {
+      const res = await fetch(sessionUrl, {
+        credentials: "include",
+        headers: { cookie: `better-auth.session_token=${token}` },
+      });
+      if (res.ok) session = await res.json();
+    } catch {}
+  }
 
-    const res = await betterFetch<Session>(sessionUrl, {
-      headers: { cookie: request.headers.get("cookie") || "" },
-    });
-    session = res.data;
+  const { pathname } = req.nextUrl;
 
-    } catch (err) {
+  if (pathname.startsWith("/sign-in") && session) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/admin";
+    return NextResponse.redirect(url);
+  }
 
-    console.error("failed to fetch session in middleware:", err);
-    
-    }
+  if (pathname.startsWith("/admin") && session?.user?.role !== "ADMIN") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
 
-    if (request.nextUrl.pathname.startsWith('/sign-in') && session) {
-        return NextResponse.rewrite(new URL('/admin', request.url))
-    }
+  if (pathname.startsWith("/dashboard") && !session) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
 
-    if (request.nextUrl.pathname.startsWith('/admin') && session?.user?.role !== "ADMIN") {
-        return NextResponse.rewrite(new URL('/dashboard', request.url))
-    }
- 
-    if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
-        return NextResponse.rewrite(new URL('/', request.url))
-    }
-
-  return NextResponse.next()
+  return NextResponse.next();
 }
- 
 
 export const config = {
-  matcher: [ '/dashboard/:path*', '/admin/:path*', '/sign-in'],
-}
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/sign-in"],
+};
