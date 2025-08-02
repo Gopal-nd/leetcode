@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 
 services:
   db:
@@ -11,6 +11,29 @@ services:
       - 5435:5432
     volumes:
       - leetcode-db:/var/lib/postgresql/data
+    networks:
+      - leetcode-network
+  app:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    environment:
+        - env
+    networks:
+      - leetcode-network
 
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    environment:
+        - env
+    networks:
+      - leetcode-network
 volumes:
   leetcode-db:
+
+networks:
+  leetcode-network:
