@@ -40,7 +40,6 @@ export const auth = betterAuth({
                           role: "ADMIN"
                       }
                   })
-                  console.log("update", update.role)
             }
             }
            },

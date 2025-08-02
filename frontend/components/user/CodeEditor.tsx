@@ -159,9 +159,7 @@ const CodeEditor = ({ problem }: { problem: Problem }) => {
       toast.error(error.message || "Error submitting code");
     },
   });
-  if (res) {
-    console.log(res);
-  }
+
 
   return (
     <div className="flex flex-col">

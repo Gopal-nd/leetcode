@@ -24,12 +24,12 @@ export const createProblem = asyncHandler(async (req, res) => {
 
   } = req.body;
 
-  console.log("body", req.body);
+
 
   try {
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
       const languageId = getJudge0LanguageId(language);
-      console.log( "languageId",languageId)
+   
       if (!languageId) {
         throw new APIError({
           status: 400,
@@ -46,8 +46,7 @@ export const createProblem = asyncHandler(async (req, res) => {
         })
       );
 
-      console.log( "submitions",submissions)
-
+  
       const submissionResults = await submitBatch(submissions);
 
       const tokens = submissionResults.map((res: any) => res.token);
@@ -56,8 +55,6 @@ export const createProblem = asyncHandler(async (req, res) => {
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
-        console.log( "result of each test case",i,result)
-        console.log("Result-----", result);
         console.log(
           `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
         );
@@ -208,8 +205,7 @@ export const updateProblemById = asyncHandler(async (req, res) => {
         })
       );
 
-      console.log( "submitions",submissions)
-
+      
       const submissionResults = await submitBatch(submissions);
 
       const tokens = submissionResults.map((res: any) => res.token);
@@ -218,8 +214,7 @@ export const updateProblemById = asyncHandler(async (req, res) => {
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
-        console.log( "result of each test case",i,result)
-        console.log("Result-----", result);
+
         console.log(
           `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
         );

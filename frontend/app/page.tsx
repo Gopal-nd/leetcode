@@ -8,6 +8,7 @@ import { Code2, Users, Trophy, Play, ChevronRight, Star, ArrowRight } from "luci
 
 import Link from "next/link"
 import { ModeToggle } from "@/components/ModeToggle"
+import InteractiveGrid from "@/components/BackgrundGrid"
 
 export default function LandingPage() {
   const [stats, setStats] = useState({
@@ -40,7 +41,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-
+      <InteractiveGrid />
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -49,7 +50,7 @@ export default function LandingPage() {
             <span className="text-2xl font-bold">LeetLab</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/dashboard/problems" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
               Problems
             </Link>
             <Link href="/editor" className="text-sm font-medium hover:text-primary transition-colors">

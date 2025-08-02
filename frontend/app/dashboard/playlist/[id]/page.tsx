@@ -53,7 +53,6 @@ const PlaylistId = () => {
   const problems = data?.problemInPlaylist.map(
     (problem: any) => problem.problem
   );
-  console.log("userSolvedProblem", userSolvedProblem);
   return (
     <div>
       {userSolvedProblemLoading && <Spinner />

@@ -51,7 +51,7 @@ export default function CollaborativeCodeEditor() {
     },
     onSuccess: (data) => {
       const signals = data?.signal;
-      console.log("signals", signals);
+
       signals
         ? toast("Request timeout or resource exhaustion", {
             style: {
@@ -71,7 +71,7 @@ export default function CollaborativeCodeEditor() {
   const stderr = output?.stderr;
   const signals = output?.signals;
 
-  console.log("output", output);
+
 
   const changeLanguage = useCallback((language: string) => {
     setSelectedLanguage(language);

@@ -45,7 +45,7 @@ const Admin = () => {
       isProblemsLoading: boolean;
       problems: Problem[];
     };
-  console.log(problems);
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
@@ -176,7 +176,6 @@ const Admin = () => {
       getAllProblems();
       toast.success("Problem deleted successfully");
     } catch (error) {
-      console.log("Error deleting problem", error);
       toast.error("Error deleting problem");
     }
   }

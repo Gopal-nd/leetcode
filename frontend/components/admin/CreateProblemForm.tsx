@@ -305,9 +305,7 @@ const CreateProblemForm: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
-      console.log("Creating problem:", data);
       const res = await axiosInstance.post("/problems/create-problem", data);
-      console.log(res.data);
       toast.success(res.data.message || "Problem Created successfully⚡");
       // router.push('/dashboard')
     } catch (error) {

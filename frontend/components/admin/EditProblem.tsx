@@ -244,7 +244,6 @@ const EditProblemForm = ({problem,id}:{problem:Problem,id:string}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<Language>("JAVASCRIPT");
 
-  console.log(problem)
   const router = useRouter();
   const {
     register,
@@ -299,9 +298,8 @@ const EditProblemForm = ({problem,id}:{problem:Problem,id:string}) => {
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
-      console.log("Creating problem:", data);
+
       const res = await axiosInstance.put(`/problems/update-problem/${id}`, data);
-      console.log(res.data);
       toast.success(res.data.message || "Problem Created successfully⚡");
       // router.push('/dashboard')
     } catch (error) {

@@ -8,7 +8,7 @@ export const executeCode = asyncHandler(async (req, res) => {
 
     const {source_code, language_id, stdin, expected_outputs, problemId} = req.body
 
-    console.log(req.body)
+    
 
     // validation tests
     if (!Array.isArray(stdin) || !Array.isArray(expected_outputs)||stdin.length !== expected_outputs.length || !source_code || !language_id || stdin.length ===0 || !problemId) {
@@ -34,7 +34,7 @@ export const executeCode = asyncHandler(async (req, res) => {
     // poll for results
     const results = await pollBatchResults(tokens)
 
-    console.log("results", results)
+
 
 
     // validate results
@@ -58,7 +58,7 @@ export const executeCode = asyncHandler(async (req, res) => {
             status:result.status.description
         };
     })
-    console.log(detailsResults)
+ 
     if(!req.user?.id){
         throw new APIError({
             status: 400,
@@ -131,8 +131,7 @@ export const RunCode = asyncHandler(async (req, res) => {
 
     const {source_code, language_id, stdin, expected_outputs, problemId} = req.body
 
-    console.log(req.body)
-
+   
     // validation tests
     if (!Array.isArray(stdin) || !Array.isArray(expected_outputs)||stdin.length !== expected_outputs.length || !source_code || !language_id || stdin.length ===0 || !problemId) {
         throw new APIError({
@@ -157,7 +156,7 @@ export const RunCode = asyncHandler(async (req, res) => {
     // poll for results
     const results = await pollBatchResults(tokens)
 
-    console.log("results", results)
+
 
 
     // validate results
@@ -181,8 +180,7 @@ export const RunCode = asyncHandler(async (req, res) => {
             status:result.status.description
         };
     })
-    console.log(detailsResults)
-
+    
     return res.json(new ApiResponse({
         message: "Success",
         data:{

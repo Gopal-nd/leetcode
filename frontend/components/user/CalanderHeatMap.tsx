@@ -30,9 +30,8 @@ export default function Heatmap() {
         classForValue={(value) => {
          if (!value || value.count === 0) return 'color-empty'
     if (value.count >= 10) return 'color-green-4'
-    if (value.count >= 5) return 'color-green-3'
-    if (value.count >= 2) return 'color-green-2'
-    return 'color-green-1'
+    if (value.count >= 3) return 'color-green-3'
+    return 'color-green-2'
         }}
         titleForValue={(value) => {
           if (!value || !value.date) return 'No submissions'
