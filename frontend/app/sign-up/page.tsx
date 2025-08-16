@@ -29,6 +29,7 @@ const RegisterSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 })
+export const dynamic = "force-dynamic"; 
 
 export default function RegisterPage() {
   const { setUser } = useAuthStore();

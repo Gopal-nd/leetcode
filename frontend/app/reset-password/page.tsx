@@ -24,6 +24,7 @@ import { axiosInstance } from '@/lib/axios';
 import { InputOTPForm } from '@/components/OtpPage';
 
 
+export const dynamic = "force-dynamic"; 
 
  const ResetPasswordSchema = z.object({
   email: z.string().email(),

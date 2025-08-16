@@ -43,6 +43,7 @@ type Problem = {
     problemId: string;
   };
 };
+export const dynamic = "force-dynamic"; 
 
 
 const Admin = () => {

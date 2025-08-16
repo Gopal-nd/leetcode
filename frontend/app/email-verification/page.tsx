@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+export const dynamic = "force-dynamic"; 
 
 export default function EmailVerify() {
   const router = useRouter();

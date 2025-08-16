@@ -1,5 +1,6 @@
 import CreateProblemForm from '@/components/admin/CreateProblemForm'
 import React from 'react'
+export const dynamic = "force-dynamic"; 
 
 const AddProblem = () => {
   return (

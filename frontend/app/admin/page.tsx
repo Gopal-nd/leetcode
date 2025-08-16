@@ -37,6 +37,7 @@ type Problem = {
 
 const columnHelper = createColumnHelper<Problem>();
 
+export const dynamic = "force-dynamic"; 
 
 
 const Admin = () => {
