@@ -1643,16 +1643,15 @@ const problems = [
 // console.log(problems[1])
 
 async function seed(data:any) {
-
+const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZWUyMzM4ZTAwMDA5ZWNxdzlzbzFxY2UiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTUzNDE5NDQsImV4cCI6MTc1NTQyODM0NH0.pLWTpCMy5zH_v2116kIbK_yjj9wJ4ygFSbUzQUYz2mc'
       try {
         
-        console.log("Creating problem:", data);
+        console.log("Creating problem:", data.title);
         const res = await fetch("http://localhost:8000/api/v1/problems/create-problem", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "Cookie": "ext_name=2jMRVnghd0sMRxZDu4GSGCNZAT98cZaD; better-auth.session_token=2jMRVnghd0sMRxZDu4GSGCNZAT98cZaD.Elv5HoZmLstvlwSuN%2Bnk3KtG2OcInz%2BfpemPRt7PM74%3D"
-            
+        'Content-Type': 'application/json', 
+        cookie: `token=${authToken}`
           },
           body: JSON.stringify(data),
            credentials: "include",
@@ -1670,7 +1669,7 @@ return resJson
   
 }
 async function InsertAllProblems(problems: any[]) {
-  for (const problem of problems) {
+  for (const problem of problems.slice(0, 2)) {
     const res = await seed(problem);
     if (res?.title) {
       console.log("✅ Created:", res.title);

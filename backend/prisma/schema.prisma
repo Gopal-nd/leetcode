@@ -16,6 +16,7 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
+  password      String
   name          String?
   image         String?
   role          Role      @default(USER)
@@ -199,4 +200,15 @@ model ProblemsInPlaylist{
   problem Problems @relation(fields: [problemId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+
+model OtpVerification {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  otp          Int
+  otpExpiresAt DateTime
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }

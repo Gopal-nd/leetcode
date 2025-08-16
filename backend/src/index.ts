@@ -1,5 +1,5 @@
 import express from "express";
-import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
+
 import cors from "cors";
 import type { Request, Response, NextFunction } from "express";
 
@@ -8,11 +8,11 @@ import executeCodeRoute from "./routes/execute-code.router";
 import submissionsRoute from "./routes/submissions.router";
 import playlistsRoute from "./routes/playlist.router";
 import heatmapRoute from "./routes/heatmap.router";
+import authRoutes from "./routes/authRouter";
 import http from "http";
 import * as Y from "yjs";
 import { Server } from "socket.io";
 
-import { auth } from "../auth";
 import errorHandler from "./middleware/error.middleware";
 
 const app = express();
@@ -40,18 +40,12 @@ app.use(
   })
 );
 
-app.all("/api/auth/*splat", toNodeHandler(auth));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/api/me", async (req, res) => {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-  return res.json(session);
-});
 
+
+app.use('/api/v1/auth', authRoutes);
 app.use("/api/v1/problems", problemsRoute);
 app.use("/api/v1/execute-code", executeCodeRoute);
 app.use("/api/v1/submissions", submissionsRoute);

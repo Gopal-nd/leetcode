@@ -1,6 +1,7 @@
 
 import express from 'express'
-import { adminAuth, userAuth } from '../middleware/auth.middleware'
+import { adminAuth } from '../middleware/auth.middleware'
+import {  userAuth } from '../middleware/auth.middleware'
 import asyncHandler from '../utils/async-handler'
 import { ApiResponse } from '../utils/api-response'
 import { APIError } from '../utils/api-error'

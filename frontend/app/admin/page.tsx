@@ -25,6 +25,7 @@ import { de } from "zod/v4/locales";
 import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/lib/axios";
 import { toast } from "sonner";
+import useAuthStore from "@/store/useAuthstore";
 
 type Problem = {
   id: string;
@@ -182,7 +183,6 @@ const Admin = () => {
   return (
     <div className="p-6 max-w-full">
       <h1 className="text-xl font-semibold mb-4">Admin Problems Panel</h1>
-
       {isProblemsLoading && (
         <p className="text-gray-500">Loading problems...</p>
       )}

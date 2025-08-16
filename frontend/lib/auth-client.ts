@@ -1,4 +1,6 @@
-import { createAuthClient } from "better-auth/react"
-export const {signIn, signOut, useSession} = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL!,
-})
+import useAuthStore from "@/store/useAuthstore";
+
+export const  useSession = () => {
+    const {user} = useAuthStore();
+    return { data: user, isLoading: false, isError: false, error: null };
+}

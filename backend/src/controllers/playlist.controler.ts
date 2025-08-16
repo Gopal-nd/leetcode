@@ -5,6 +5,7 @@ import asyncHandler from "../utils/async-handler";
 
 export const createPlaylist = asyncHandler(async (req, res) => {
     const {name, description} = req.body
+    
 
     if(!req.user) throw new APIError({status: 400, message: "User not found"})
 
