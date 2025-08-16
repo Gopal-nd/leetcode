@@ -271,9 +271,14 @@ export const resendOtp = asyncHandler(async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
   try {
     // Clear the cookie for web clients
-    res.clearCookie('token');
+     res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      domain: ".opentoolbox.site",
+  
+    });
     
-      console.log(req.user)
     
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {

@@ -7,21 +7,25 @@ import useAuthStore from '@/store/useAuthstore';
 import { axiosInstance } from '@/lib/axios';
 
 const Logout = () => {
-const { logout } = useAuthStore();
-const router = useRouter();
+  const { logout } = useAuthStore();
+  const router = useRouter();
 
-    async function Logout() {
-      await axiosInstance.post('/auth/logout')
+  async function handleLogout() {
+    try {
+      await axiosInstance.post('/auth/logout');
+    } catch (e) {
+      console.error("Logout failed:", e);
+    } finally {
+      logout();              
       router.push("/sign-in"); 
-        logout();
-
     }
+  }
 
   return (
-    <Button onClick={Logout}>
-        Logout
+    <Button onClick={handleLogout}>
+      Logout
     </Button>
-  )
+  );
 }
 
-export default Logout
+export default Logout;
