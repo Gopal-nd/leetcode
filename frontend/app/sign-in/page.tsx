@@ -49,7 +49,7 @@ export default function LoginPage() {
     },
     onSuccess: (data) => {
       toast.success('Login successful');
-      console.log(data.data.sendUser.role)
+      console.log(data.data)
       setUser({
         email:data.data.sendUser.email,
         id:data.data.sendUser.id,

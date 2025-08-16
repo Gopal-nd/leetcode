@@ -12,8 +12,8 @@ const router = useRouter();
 
     async function Logout() {
       await axiosInstance.post('/auth/logout')
+      router.push("/sign-in"); 
         logout();
-        router.push("/sign-in"); 
 
     }
 

@@ -27,8 +27,7 @@ const Profile = () => {
           <Tooltip>
             <TooltipTrigger>
               <Avatar>
-                <AvatarImage src={`${session?.user?.image}`} />
-                <AvatarFallback>{session?.user?.name[0]}</AvatarFallback>
+                <AvatarFallback>{session.user?.name?.at(0) ? session.user?.name[0] : "U"}</AvatarFallback>
               </Avatar>
             </TooltipTrigger>
             <TooltipContent>

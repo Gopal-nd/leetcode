@@ -12,9 +12,11 @@ import Spinner from "../Spinner";
 const UserCard = () => {
 
   const { data: session, isPending, error, refetch } = useSession();
-  
+
+  console.log(session.user)
   return (
     <Card>
+      
       <CardHeader>
         <CardTitle>Your Profile</CardTitle>
       </CardHeader>
@@ -30,7 +32,7 @@ const UserCard = () => {
           <Alert>
             <AlertTitle>Session Error</AlertTitle>
             <AlertDescription>
-              {error.message}.{" "}
+              
               <button
                 onClick={() => refetch()}
                 className="underline hover:no-underline"
@@ -45,49 +47,19 @@ const UserCard = () => {
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
               <Avatar className="w-16 h-16">
-                {session.user.image ? (
-                  <AvatarImage
-                    src={session.user.image}
-                    alt={session.user.name}
-                  />
-                ) : (
-                  <AvatarFallback>{session.user.name.charAt(0)}</AvatarFallback>
-                )}
+
+                  <AvatarFallback>{session.user?.name!.charAt(0)}</AvatarFallback>
+
               </Avatar>
               <div>
-                <p className="text-lg font-semibold">{session.user.name}</p>
+                <p className="text-lg font-semibold">{session?.user?.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {session.user.email}
+                  {session?.user?.email}
                 </p>
               </div>
             </div>
 
             <Tabs defaultValue="details" className="w-full">
-              <TabsList>
-                <TabsTrigger value="details">Session Data</TabsTrigger>
-              </TabsList>
-              <TabsContent value="details" className="mt-4">
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                  <div>
-                    <dt className="font-medium">Expires At</dt>
-                    <dd className="text-sm text-muted-foreground">
-                      {new Date(session?.session.expiresAt).toLocaleString()}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">User Agent</dt>
-                    <dd className="text-sm text-muted-foreground">
-                      {session?.session.userAgent}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">IP Address</dt>
-                    <dd className="text-sm text-green-500">
-                      {session?.session.ipAddress}
-                    </dd>
-                  </div>
-                </dl>
-              </TabsContent>
             </Tabs>
 
             <div className="pt-4">

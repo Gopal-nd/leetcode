@@ -127,6 +127,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     name:user.name,
     id:user.id,
     role:user.role,
+    email:user.email
    }
 
    res.status(200).json(new ApiResponse({data:{sendUser,token},statusCode:200,message:'Login Success'}));
