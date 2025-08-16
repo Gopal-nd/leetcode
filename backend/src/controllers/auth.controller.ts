@@ -121,7 +121,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
      maxAge: 1000 * 60 * 60 * 24, 
      httpOnly:true,
      secure:true,
-      domain: "leetlab.opentoolbox.site", 
+      domain: ".opentoolbox.site", 
      sameSite:'none'
    })
 
@@ -270,22 +270,28 @@ export const resendOtp = asyncHandler(async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    // Clear the cookie for web clients
-     res.clearCookie("token", {
+    res.clearCookie("token", {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      domain: "leetlab.opentoolbox.site",
-  
+      domain: ".opentoolbox.site",
+      path: "/",   // must match login
     });
-    
-    
-    res.status(200).json({ message: "Logged out successfully" });
+    return res.status(200).json(new ApiResponse({
+      statusCode: 200,
+      data: null,
+      message: "Logged out successfully"
+    }));
   } catch (error) {
     console.error("Error during logout:", error);
-    res.status(500).json({ message: "Error during logout", data: null });
+    return res.status(500).json(new ApiResponse({
+      statusCode: 500,
+      data: null,
+      message: "Error during logout"
+    }));
   }
 };
+
 
 export const emailVerify = asyncHandler(async (req: Request, res: Response) => {
   const { email,otp } = req.body;
