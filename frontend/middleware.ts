@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  // Get the correct Better Auth session token
+
   const authToken = req.cookies.get("token")?.value;
   const origin = req.nextUrl.origin;
   
