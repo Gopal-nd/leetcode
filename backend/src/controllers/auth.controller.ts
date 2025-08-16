@@ -64,7 +64,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
           email: true
         }
       });
-      // const mailresponse = await sendEmail(email, 'OTP Verification', `Your OTP is: ${newUserOtp}`);
+      const mailresponse = await sendEmail(email, 'OTP Verification', `Your OTP is: ${newUserOtp}`);
 
   console.log("user created",user)
 
