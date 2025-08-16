@@ -121,7 +121,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
      maxAge: 1000 * 60 * 60 * 24, 
      httpOnly:true,
      secure:true,
-      domain: ".opentoolbox.site", 
+      domain: "leetlab.opentoolbox.site", 
      sameSite:'none'
    })
 
@@ -275,7 +275,7 @@ export const logout = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      domain: ".opentoolbox.site",
+      domain: "leetlab.opentoolbox.site",
   
     });
     
