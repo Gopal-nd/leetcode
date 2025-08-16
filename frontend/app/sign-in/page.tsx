@@ -72,8 +72,8 @@ export default function LoginPage() {
   // Guest login handler
   const handleGuestLogin = () => {
     mutation.mutate({
-      email: "guest@gmail.com",
-      password: "123123"
+email: "lenev99889@futebr.com",
+    password: "123123",
     })
   }
 

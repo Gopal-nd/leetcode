@@ -157,19 +157,7 @@ export default function RegisterPage() {
                 {registerMutation.isPending ? "Creating..." : "Create Account"}
               </Button>
 
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <span className="text-gray-500 text-sm">or</span>
-                <div className="flex-1 h-px bg-gray-300"></div>
-              </div>
 
-              <Button
-                variant="outline"
-                onClick={() => guestMutation.mutate()}
-                disabled={guestMutation.isPending}
-              >
-                {guestMutation.isPending ? "Logging in..." : "Continue as Guest"}
-              </Button>
             </div>
 
             <p className="text-center text-sm ">
