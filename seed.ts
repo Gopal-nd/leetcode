@@ -1643,7 +1643,7 @@ const problems = [
 // console.log(problems[1])
 
 async function seed(data:any) {
-const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZWUyMzM4ZTAwMDA5ZWNxdzlzbzFxY2UiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTUzNDE5NDQsImV4cCI6MTc1NTQyODM0NH0.pLWTpCMy5zH_v2116kIbK_yjj9wJ4ygFSbUzQUYz2mc'
+const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZWVjMTZqbDAwMDA5ZWlycDdxN3BkejgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTUzNTMzMzIsImV4cCI6MTc1NTQzOTczMn0.NSU40RzmGibJdqfsmyO-z7y2W--jrAsB7tKtViuT7dM'
       try {
         
         console.log("Creating problem:", data.title);

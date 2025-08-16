@@ -120,7 +120,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
    res.cookie('token',token,{
      maxAge: 1000 * 60 * 60 * 24, 
      httpOnly:true,
-     secure:true
+     secure:true,
+     sameSite:'none'
    })
 
    const sendUser = {
