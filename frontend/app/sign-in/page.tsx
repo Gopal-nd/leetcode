@@ -14,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import useAuthStore from '@/store/useAuthstore';
@@ -28,15 +27,11 @@ const LoginSchema = z.object({
   password: z.string().min(6),
 })
 
-
 export default function LoginPage() {
-  const  {setUser} = useAuthStore()
-
+  const { setUser } = useAuthStore()
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
-    defaultValues:{
-
-    }
+    defaultValues:{}
   })
 
   const router = useRouter()
@@ -44,91 +39,117 @@ export default function LoginPage() {
   const mutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await axiosInstance.post('/auth/sign-in', data);
-
       return response.data;
     },
     onSuccess: (data) => {
       toast.success('Login successful');
-      console.log(data.data)
       setUser({
-        email:data.data.sendUser.email,
-        id:data.data.sendUser.id,
-        role:data.data.sendUser.role,
-        name:data.data.sendUser.name,
+        email: data.data.sendUser.email,
+        id: data.data.sendUser.id,
+        role: data.data.sendUser.role,
+        name: data.data.sendUser.name,
       })
-      if(data.data.sendUser.role === 'USER'){
+      if (data.data.sendUser.role === 'USER') {
         router.push(`/dashboard`)
-      }else if(data.data.sendUser.role === 'ADMIN'){
+      } else if (data.data.sendUser.role === 'ADMIN') {
         router.push(`/admin`)
       }
-
     },
     onError: (error) => {
-      console.log(error)
-      if(axios.isAxiosError(error)){
+      if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
-      }else{
-        toast.error('something went wrong ,Login Failed')
+      } else {
+        toast.error('Something went wrong, Login Failed')
       }
     },
   });
 
   const onSubmit = (data: any) => {
-    console.log(data)
-   const output =  mutation.mutate(data)
+    mutation.mutate(data)
+  }
 
+  // Guest login handler
+  const handleGuestLogin = () => {
+    mutation.mutate({
+      email: "guest@gmail.com",
+      password: "123123"
+    })
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-xl">
-      <h2 className="text-2xl font-bold mb-6">Login</h2>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="email@gmail.com" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Enter the User Email.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='password'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
+    <div className="flex items-center justify-center min-h-screen p-6">
+      <div className="w-full max-w-md space-y-6 rounded-xl border shadow-lg p-8">
+        <div className="text-center space-y-1">
+          <h2 className="text-2xl font-bold tracking-tight">Login</h2>
+          <p className="text-sm">Access your account securely</p>
+        </div>
 
-                    {...field}
-                    placeholder='******'
-                    type='password'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <p className='text-blue-500'>
-          <Link href={'/reset-password'}>Forgot Password?</Link>
-          </p>
-          <div className='flex gap-2'>
-          <Button>Guest Login</Button>
-          <Button type="submit">Submit</Button>
-          </div>
-          <p>Don't have an account? <Link href={'/sign-up'} className='text-blue-500 underline'>Sign Up</Link></p>
-        </form>
-      </Form>
-      
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="email@gmail.com" {...field} />
+                  </FormControl>
+                  <FormDescription>Enter your registered email</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="******" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end text-sm">
+              <Link href="/reset-password" className="underline text-blue-400">
+                Forgot Password?
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+              <Button type="submit" className="w-full" disabled={mutation.isPending}>
+                {mutation.isPending ? "Logging in..." : "Login"}
+              </Button>
+             <div className="flex items-center gap-2">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <span className="text-gray-500 text-sm">or</span>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
+              <Button
+                type="button"
+                className="w-full"
+                variant="outline"
+                onClick={handleGuestLogin}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Logging in..." : "Guest Login"}
+              </Button>
+            </div>
+
+            <p className="text-center text-sm">
+              Don’t have an account?{" "}
+              <Link href="/sign-up" className="underline text-blue-400">
+                Sign Up
+              </Link>
+            </p>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }
