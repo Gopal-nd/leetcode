@@ -43,7 +43,7 @@ const errorHandler = (
   }
 
   //  Log and Handle Unexpected Errors
-  console.error("Unhandled Error:", err.stack);
+ 
   return res.status(500).json(
     new ApiResponse({
       statusCode: 500,

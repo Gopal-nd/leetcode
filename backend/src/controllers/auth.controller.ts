@@ -14,11 +14,11 @@ import { generateToken } from '../lib/jwt';
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const { email, password, name } = req.body;
-  console.log(email,password,name)
+  
   const existingUser = await prisma.user.findUnique({ where: { email } });
 
   if (existingUser) {
-    console.log('user alredy exist from /sign-up route')
+
     throw new APIError({status:400,message:"User already exist"})
   }
 
@@ -66,14 +66,13 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
       });
       const mailresponse = await sendEmail(email, 'OTP Verification', `Your OTP is: ${newUserOtp}`);
 
-  console.log("user created",user)
 
   res.status(201).json(new ApiResponse({data:user,statusCode:201,message:"User created successfully"}));
 })
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
    const { email, password } = req.body;
-   console.log(email,password)
+
  
    const user = await prisma.user.findUnique({ where: { email } });
 
@@ -141,7 +140,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 export const ResetPassword = asyncHandler(async (req: Request, res: Response) => {
 
     const {email ,otp , password } = req.body
-    console.log(req.body)
+    
     const exist  = await  prisma.user.findUnique({where:{email}})
     if(!exist){
       throw new APIError({status:401,message:'Invalid email'})
@@ -159,7 +158,7 @@ export const ResetPassword = asyncHandler(async (req: Request, res: Response) =>
         await prisma.otpVerification.delete({where:{email}})
         throw new APIError({status:401,message:'OTP Expired try again later'})
       }
-console.log(otp)
+
       const isMatch = Number(otp) === user.otp
 
       if(!isMatch){
@@ -247,7 +246,6 @@ export const resendOtp = asyncHandler(async (req: Request, res: Response) => {
       
       // 6 digit otp
       const userOtp =( Math.floor(Math.random() * 900000) + 100000)
-      console.log(userOtp)
       
       const otpExpiration = new Date(Date.now() + 5 * 60 * 1000); // 15 minutes from now
       
@@ -283,7 +281,7 @@ export const logout = async (req: Request, res: Response) => {
       message: "Logged out successfully"
     }));
   } catch (error) {
-    console.error("Error during logout:", error);
+
     return res.status(500).json(new ApiResponse({
       statusCode: 500,
       data: null,
@@ -295,7 +293,6 @@ export const logout = async (req: Request, res: Response) => {
 
 export const emailVerify = asyncHandler(async (req: Request, res: Response) => {
   const { email,otp } = req.body;
-  console.log(email,otp)
   const user = await prisma.otpVerification.findUnique({where:{email}})
       if(!user?.email){
         throw new APIError({status:401,message:'Invalid email'})

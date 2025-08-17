@@ -42,7 +42,7 @@ export function InputOTPForm({isOptCorrect,setIsOptCorrect,email,setOtp}:{isOptC
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
-        console.log(data)
+        
         setOtp(data.otp)
         const response = await axiosInstance.post('/auth/reset', data);
         console.log(response.data)

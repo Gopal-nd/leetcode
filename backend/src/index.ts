@@ -57,7 +57,7 @@ app.get("/", async (req, res) => {
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(" Error:", err.message || err);
+  console.error(" Error from global middleware:", err.message || err);
   errorHandler(err, req, res, next);
 });
 

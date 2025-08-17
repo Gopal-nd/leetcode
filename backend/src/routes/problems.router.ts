@@ -38,7 +38,7 @@ export const userStats = asyncHandler(async (req, res) => {
   return acc;
 }, {} as Record<string, number>);
     const total = await prisma.problems.count()
-    console.log("problems solved count",count,"/",total,tags,difficultyCount)
+
 
     return res.json( new ApiResponse({
         statusCode: 200,

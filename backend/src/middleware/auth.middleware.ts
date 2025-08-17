@@ -17,9 +17,8 @@ function parseCookies(cookieHeader:any) {
 export const userAuth = (req: any, res: Response, next: NextFunction): void => {
 
   let  token =  parseCookies(req.headers.cookie).token
-console.log(token , "token from auth middleware")
+
   if (!token) {
-    console.log('No token provided');
     res.status(401).json({ message: 'Access Denied' });
     return;
   }
@@ -27,7 +26,6 @@ console.log(token , "token from auth middleware")
   try {
     const decoded = verifyToken(token)
     req.user = decoded;
-    console.log(decoded,"decoded")
     next(); // Ensure next() is called for successful verification
   } catch (error) {
     res.status(403).json({ message: 'Invalid Token' });
@@ -45,7 +43,6 @@ export const adminAuth = (req: any, res: Response, next: NextFunction): void => 
   let  token =  parseCookies(req.headers.cookie).token
 
   if (!token) {
-    console.log('No token provided');
     res.status(401).json(new ApiResponse({data:null,statusCode:500,message:"Access Denied"}))
 
     return;

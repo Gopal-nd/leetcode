@@ -26,7 +26,7 @@ export async function submitBatch(submissions:any) {
     })
 
 
-    // console.log("Submission Results: ", data)
+
 
     return data // [{token} , {token} , {token}]
 }
