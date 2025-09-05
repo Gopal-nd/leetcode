@@ -12,7 +12,7 @@ import authRoutes from "./routes/authRouter";
 import http from "http";
 import * as Y from "yjs";
 import { Server } from "socket.io";
-
+import cookieParser from "cookie-parser";
 import errorHandler from "./middleware/error.middleware";
 
 const app = express();
@@ -40,12 +40,11 @@ app.use(
   })
 );
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-
-app.use('/api/v1/auth', authRoutes);
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/problems", problemsRoute);
 app.use("/api/v1/execute-code", executeCodeRoute);
 app.use("/api/v1/submissions", submissionsRoute);

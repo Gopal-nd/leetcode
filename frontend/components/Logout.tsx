@@ -16,14 +16,12 @@ const Logout = () => {
       setLoading(true);
       // ✅ Wait for API response
       await axiosInstance.post('/auth/logout');
-      
-      // ✅ Clear local state and redirect only after success
       logout();              
-      router.push("/sign-in"); 
     } catch (e) {
       console.error("Logout failed:", e);
     } finally {
       setLoading(false);
+      router.replace('/');
     }
   }
 

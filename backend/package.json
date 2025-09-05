@@ -7,7 +7,8 @@
     "dev": "bun src/index.ts",
     "prisma:generate": "bunx prisma generate",
     "build": "bun run prisma:generate && bun build src/index.ts --target bun --outdir dist --minify",
-    "start": "bun dist/index.js"
+    "start": "bun dist/index.js",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -19,6 +20,7 @@
   "dependencies": {
     "@godsreveal/vercel-bun": "^0.2.4",
     "@prisma/client": "^6.12.0",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
