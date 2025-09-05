@@ -43,36 +43,35 @@ type Problem = {
     problemId: string;
   };
 };
-export const dynamic = "force-dynamic"; 
-
+export const dynamic = "force-dynamic";
 
 const Admin = () => {
-
   const { data: session } = useSession();
 
- 
   // const { getAllProblems, isProblemsLoading, problems } = useProblemsStore();
-  const { data:problems,isPending,error} = useQuery<Problem[]>({
+  const {
+    data: problems,
+    isPending,
+    error,
+  } = useQuery<Problem[]>({
     queryKey: ["problems"],
     queryFn: async () => {
       try {
-        const res = await axiosInstance.get('/problems/get-all-problems');
+        const res = await axiosInstance.get("/problems/get-all-problems");
         const data = res.data;
 
         toast.success(data.message);
-        return data.data
+        return data.data;
       } catch (error) {
         toast.error("Something went wrong in Fetching");
         console.error(error);
-      } 
-      
-    }})
-
+      }
+    },
+  });
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
-
 
   const difficulties = useMemo(
     () => Array.from(new Set((problems ?? []).map((p) => p.difficulty))).sort(),
@@ -106,7 +105,7 @@ const Admin = () => {
     });
   }, [problems, selectedDifficulty, selectedTag, globalFilter]);
 
-   const columns: ColumnDef<Problem>[] = [
+  const columns: ColumnDef<Problem>[] = [
     {
       header: "Solved",
       accessorKey: "problemSolved",
@@ -185,146 +184,152 @@ const Admin = () => {
 
   return (
     <>
-    {isPending && <Spinner />}
+      {isPending && <Spinner />}
 
-    {!isPending && <div className="p-6 max-w-full">
-      <h1 className="text-2xl font-bold mb-4 bg-gradient-to-b from-white via-gray-100 to-gray-300  bg-clip-text text-transparent w-full "> Poblems</h1>
+      {!isPending && (
+        <div className="p-6 max-w-full">
+          <h1 className="text-2xl font-bold mb-4 bg-gradient-to-b from-white via-gray-100 to-gray-300  bg-clip-text text-transparent w-full ">
+            {" "}
+            Poblems
+          </h1>
 
-      <div className="flex justify-between items-center">
-        <Input
-          placeholder="Search problems..."
-          onChange={(e) => handleSearch(e.target.value)}
-          className="mb-4 w-full max-w-md"
-        />
+          <div className="flex justify-between items-center">
+            <Input
+              placeholder="Search problems..."
+              onChange={(e) => handleSearch(e.target.value)}
+              className="mb-4 w-full max-w-md"
+            />
 
-        <PlaylistModel />
-      </div>
+            <PlaylistModel />
+          </div>
 
-      <div className="flex gap-4 mb-4 flex-wrap">
-        <Select
-          value={selectedDifficulty}
-          onValueChange={(e) => setSelectedDifficulty(e)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Difficulties" />
-          </SelectTrigger>
-          <SelectContent>
-            {/* <SelectItem value="">All Difficulties</SelectItem> */}
-            {difficulties.map((difficulty) => (
-              <SelectItem key={difficulty} value={difficulty}>
-                {difficulty}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select value={selectedTag} onValueChange={(e) => setSelectedTag(e)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Tags" />
-          </SelectTrigger>
-          <SelectContent>
-            {/* <SelectItem value="">All Tags</SelectItem> */}
-            {tags.map((t) => (
-              <SelectItem key={t} value={t}>
-                {t}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Button
-          variant="outline"
-          onClick={() => {
-            setSelectedDifficulty("");
-            setSelectedTag("");
-            setGlobalFilter("");
-          }}
-        >
-          clear
-        </Button>
-      </div>
-
-     <div className="overflow-auto rounded-md border">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-muted">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer px-4 py-2 font-medium"
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {{
-                      asc: " 🔼",
-                      desc: " 🔽",
-                    }[header.column.getIsSorted() as string] ?? ""}
-                  </th>
+          <div className="flex gap-4 mb-4 flex-wrap">
+            <Select
+              value={selectedDifficulty}
+              onValueChange={(e) => setSelectedDifficulty(e)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Difficulties" />
+              </SelectTrigger>
+              <SelectContent>
+                {/* <SelectItem value="">All Difficulties</SelectItem> */}
+                {difficulties.map((difficulty) => (
+                  <SelectItem key={difficulty} value={difficulty}>
+                    {difficulty}
+                  </SelectItem>
                 ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2 align-top">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </SelectContent>
+            </Select>
 
-      <div className="flex items-center justify-between mt-4">
-    
-        <div className="flex gap-2">
-          <button
-            className="px-3 py-1 bg-muted rounded disabled:opacity-50"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </button>
-          <button
-            className="px-3 py-1 bg-muted rounded disabled:opacity-50"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </button>
+            <Select
+              value={selectedTag}
+              onValueChange={(e) => setSelectedTag(e)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Tags" />
+              </SelectTrigger>
+              <SelectContent>
+                {/* <SelectItem value="">All Tags</SelectItem> */}
+                {tags.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSelectedDifficulty("");
+                setSelectedTag("");
+                setGlobalFilter("");
+              }}
+            >
+              clear
+            </Button>
+          </div>
+          <div className="overflow-auto rounded-md border">
+            <table className="min-w-full text-sm text-left">
+              <thead className="bg-muted">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="cursor-pointer px-4 py-2 font-medium"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? ""}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="border-t">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-2 align-top">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex gap-2">
+              <button
+                className="px-3 py-1 bg-muted rounded disabled:opacity-50"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </button>
+              <button
+                className="px-3 py-1 bg-muted rounded disabled:opacity-50"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </button>
+            </div>
+
+            <span className="text-sm">
+              Page {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}
+            </span>
+
+            <select
+              className="px-2 py-1 text-sm bg-muted rounded"
+              value={table.getState().pagination.pageSize}
+              onChange={(e) => {
+                table.setPageSize(Number(e.target.value));
+              }}
+            >
+              {[5, 10, 20].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-
-
-        <span className="text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-
-        
-        <select
-          className="px-2 py-1 text-sm bg-muted rounded"
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-        >
-          {[5, 10, 20].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>}
+      )}
     </>
-        
   );
 };
 

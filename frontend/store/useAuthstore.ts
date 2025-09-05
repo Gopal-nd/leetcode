@@ -1,12 +1,11 @@
-import { create } from 'zustand';
-import { persist, PersistOptions } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, PersistOptions } from "zustand/middleware";
 
 export type User = {
   id: string;
   email: string;
   role: string;
   name?: string;
-
 };
 
 export type AuthState = {
@@ -14,7 +13,7 @@ export type AuthState = {
   user: User | null;
   role: string | null;
   token: string | null;
-  setUser: (user: User) => void;
+  setUser: (user: User, token: string) => void;
   clearUser: () => void;
   setToken: (token: string) => void;
   clearToken: () => void;
@@ -30,10 +29,11 @@ const useAuthStore = create<AuthState>()(
       role: null,
       token: null,
 
-      setUser: (user) =>
+      setUser: (user: User, token: string) =>
         set(() => ({
           user: { ...user },
           role: user.role,
+          token: token,
           isAuthenticated: true,
         })),
 
@@ -65,7 +65,7 @@ const useAuthStore = create<AuthState>()(
         })),
 
       logout: () => {
-        localStorage.removeItem('auth-storage'); 
+        localStorage.removeItem("auth-storage");
         set(() => ({
           token: null,
           user: null,
@@ -75,8 +75,8 @@ const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage', 
-      getStorage: () => localStorage, 
+      name: "auth-storage",
+      getStorage: () => localStorage,
     } as PersistOptions<AuthState>
   )
 );

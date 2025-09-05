@@ -1,69 +1,82 @@
-import { ApiResponse } from '../utils/api-response';
-import type { JwtPayload } from 'jsonwebtoken';
-import { verifyToken } from '../lib/jwt';
+import { ApiResponse } from "../utils/api-response";
+import type { JwtPayload } from "jsonwebtoken";
+import { verifyToken } from "../lib/jwt";
 import type { NextFunction, Request, Response } from "express";
 
-function parseCookies(cookieHeader:any) {
-  if (!cookieHeader) return {};
-  return cookieHeader.split(";").reduce((acc:any, cookie:any) => {
-    const [key, value] = cookie.trim().split("=");
-    acc[key] = value;
-    return acc;
-  }, {});
-}
-
-
-
 export const userAuth = (req: any, res: Response, next: NextFunction): void => {
-
-  let  token =  parseCookies(req.headers.cookie).token
+  console.log(req.headers);
+  let token = req.headers.authorization.split(" ")[1];
 
   if (!token) {
-    res.status(401).json({ message: 'Access Denied' });
+    res.status(401).json({ message: "Access Denied" });
     return;
   }
-
+  console.log(token);
   try {
-    const decoded = verifyToken(token)
+    const decoded = verifyToken(token as string);
     req.user = decoded;
     next(); // Ensure next() is called for successful verification
   } catch (error) {
-    res.status(403).json({ message: 'Invalid Token' });
+    console.log(error);
+    res.status(403).json({ message: "Invalid Token" });
   }
 };
 
+export const adminAuth = (
+  req: any,
+  res: Response,
+  next: NextFunction
+): void => {
+  console.log(req);
 
-
-
-
-
-
-
-export const adminAuth = (req: any, res: Response, next: NextFunction): void => {
-  let  token =  parseCookies(req.headers.cookie).token
-
+  let token = req.headers.authorization.split(" ")[1];
+  console.log(token);
   if (!token) {
-    res.status(401).json(new ApiResponse({data:null,statusCode:500,message:"Access Denied"}))
+    res.status(401).json(
+      new ApiResponse({
+        data: null,
+        statusCode: 500,
+        message: "Access Denied",
+      })
+    );
 
     return;
   }
 
   try {
-    const decoded = verifyToken(token) as JwtPayload 
+    const decoded = verifyToken(token as string) as JwtPayload;
 
     if (!decoded || typeof decoded !== "object" || !decoded.role) {
-        res.status(403).json(new ApiResponse({ data: null, statusCode: 403, message: "Unauthorized: Invalid token or role missing" }));
-      }
-  
-      if (decoded.role !== "ADMIN") {
-        res.status(403).json(new ApiResponse({ data: null, statusCode: 403, message: "Forbidden: Admin access required" }));
-      }
+      res.status(403).json(
+        new ApiResponse({
+          data: null,
+          statusCode: 403,
+          message: "Unauthorized: Invalid token or role missing",
+        })
+      );
+    }
+
+    if (decoded.role !== "ADMIN") {
+      res.status(403).json(
+        new ApiResponse({
+          data: null,
+          statusCode: 403,
+          message: "Forbidden: Admin access required",
+        })
+      );
+    }
 
     req.user = decoded;
-    next(); 
+    next();
   } catch (error) {
-    res.status(403).json(new ApiResponse({data:null,statusCode:500,message:"something went wrong in Admin Middleware"}))
+    console.log(error);
+
+    res.status(403).json(
+      new ApiResponse({
+        data: null,
+        statusCode: 500,
+        message: "something went wrong in Admin Middleware",
+      })
+    );
   }
 };
-
-

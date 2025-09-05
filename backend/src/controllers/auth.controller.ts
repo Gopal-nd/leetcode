@@ -124,13 +124,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   const token = generateToken(user.id, user.role);
 
-  res.cookie("token", token, {
-    maxAge: 1000 * 60 * 60 * 24,
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-
   const sendUser = {
     name: user.name,
     id: user.id,
@@ -317,11 +310,6 @@ export const resendOtp = asyncHandler(async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
     return res.status(200).json(
       new ApiResponse({
         statusCode: 200,

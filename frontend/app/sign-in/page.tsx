@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import React, { use, useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useAuthStore from "@/store/useAuthstore";
@@ -37,7 +37,6 @@ export default function LoginPage() {
     defaultValues: {},
   });
 
-  
   const router = useRouter();
 
   const mutation = useMutation({
@@ -48,17 +47,21 @@ export default function LoginPage() {
     onSuccess: (data) => {
       console.log("Login success response:", data);
       const user = data?.data?.sendUser;
+      const token = data?.data?.token;
       if (!user) {
         toast.error("No user returned from API");
         return;
       }
 
-      setUser({
-        email: user.email,
-        id: user.id,
-        role: user.role,
-        name: user.name,
-      });
+      setUser(
+        {
+          email: user.email,
+          id: user.id,
+          role: user.role,
+          name: user.name,
+        },
+        token
+      );
 
       toast.success("Login successful");
 
@@ -116,9 +119,7 @@ export default function LoginPage() {
                   <FormControl>
                     <Input placeholder="email@gmail.com" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Enter your registered email
-                  </FormDescription>
+                  <FormDescription>Enter your registered email</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -140,10 +141,7 @@ export default function LoginPage() {
             />
 
             <div className="flex justify-end text-sm">
-              <Link
-                href="/reset-password"
-                className="underline text-blue-400"
-              >
+              <Link href="/reset-password" className="underline text-blue-400">
                 Forgot Password?
               </Link>
             </div>
