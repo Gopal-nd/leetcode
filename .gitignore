@@ -12,7 +12,7 @@
 
 # testing
 /coverage
-
+/docker
 # next.js
 /.next/
 /out/
